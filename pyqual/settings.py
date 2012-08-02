@@ -1,4 +1,4 @@
-import os
+import os, cherrypy
 
 DB_HOST = 'localhost'
 DB_NAME = 'pyqual'
@@ -11,6 +11,9 @@ APP_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 # Config for CherryPy
 CP_CONFIG = {
+    '/': {
+        'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+    },
     '/static': {
         'tools.staticdir.on': True,
         'tools.staticdir.dir': os.path.join(APP_ROOT, 'static'),

@@ -17,14 +17,23 @@ resizeCodeTextarea = function(textarea) {
     var str = $(this).val();
     var cols = 54;
     var linecount = 0;
+    var maxrows = 14;
     var lines = str.split("\n");
     $.each(str.split("\n"), function(l) {
         console.log(l);
         linecount += Math.ceil( l / cols );
     });
-
+    if (linecount > maxrows) { linecount = maxrows; }
     console.log(cols + ' - ' + linecount + ' - ' + $(this).val());
-    $(this).attr('rows', String(linecount + 1));
+    $(this).attr('rows', String(linecount + 2));
+};
+
+showResult = function(data) {
+    if (data['result'] == 'success') {
+        $('#alert .alert-heading').html('Success!');
+        $('#alert .alert-body').html(data['message']);
+        $('#alert').show();
+    }
 };
 
 var pagePattern = /#[A-Za-z0-9\-].*/;
@@ -35,7 +44,7 @@ var Pq = function() {
 
 Pq.prototype = {
     loadTests: function() {
-        $.getJSON('j/tests', function(data) {
+        $.getJSON('j/test', function(data) {
             var html = '';
 
             $.each(data, function(key, val) {
@@ -52,7 +61,7 @@ Pq.prototype = {
         });
     },
     loadDatabases: function() {
-        $.getJSON('j/databases', function(data) {
+        $.getJSON('j/database', function(data) {
             var html = '';
 
             $.each(data, function(key, val) {
@@ -69,7 +78,7 @@ Pq.prototype = {
         });
     },
     loadUsers: function() {
-        $.getJSON('j/users', function(data) {
+        $.getJSON('j/user', function(data) {
             var html = '';
 
             $.each(data, function(key, val) {
@@ -95,12 +104,13 @@ Pq.prototype = {
             selected['schedule_id'] = data['schedule_id'];
             selected['test_type_id'] = data['test_type_id'];
 
+            $('#test-id').val(data['test_id']);
             $('#test-name').val(data['name']);
             $('#test-lastrun').val(data['lastrun']);
             $('#test-sql').val(data['sql']);
             $('#test-python').val(data['python']);
         });
-        $.getJSON('j/databases', function(data) {
+        $.getJSON('j/database', function(data) {
             $('#test-database').html('');
             $.each(data, function() {
                 var option = $("<option />").val(this.database_id).text(this.name);
@@ -110,7 +120,7 @@ Pq.prototype = {
                 $('#test-database').append(option);
             });
         });
-        $.getJSON('j/schedules', function(data) {
+        $.getJSON('j/schedule', function(data) {
             $('#test-schedule').html('');
             $.each(data, function() {
                 var option = $("<option />").val(this.schedule_id).text(this.name);
@@ -120,7 +130,7 @@ Pq.prototype = {
                 $('#test-schedule').append(option);
             });
         });
-        $.getJSON('j/test-types', function(data) {
+        $.getJSON('j/test-type', function(data) {
             $('#test-type').html('');
             $.each(data, function() {
                 var option = $("<option />").val(this.test_type_id).text(this.name);
@@ -140,6 +150,32 @@ Pq.prototype = {
            'margin-left': function () { 
                return -($(this).width() / 2); 
            }
+        });
+    },
+    saveTest: function(testForm) {
+        url = 'j/test/' + testForm.find('#test-id').val();
+        data = {
+            'name':         testForm.find('#test-name').val(),
+            'schedule_id':  testForm.find('#test-schedule').val(),
+            'database_id':  testForm.find('#test-database').val(),
+            'test_type_id': testForm.find('#test-type').val(),
+            'sql':          testForm.find('#test-sql').val(),
+            'python':       testForm.find('#test-python').val()
+        }
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function(data, status, jq) {
+                if (data['result'] == 'success') {
+                    showResult(data);
+                } else {
+                    $('#test-detail-alert .alert-heading').html('Save Failed!');
+                    $('#test-detail-alert .alert-body').html(data['message']);
+                    $('#test-detail-alert').show();
+                }
+            },
+            dataType: 'json'
         });
     }
  };
@@ -169,4 +205,12 @@ $(document).ready(function() {
      ***/
     // keep code textareas the right size
     $('textarea.code').change(resizeCodeTextarea).keydown(resizeCodeTextarea);
+
+    /***
+     * Operations
+     ***/
+    $('#test-detail-form').submit(function() {
+        site.saveTest($('#test-detail-form'));
+        return false;
+    });
 });

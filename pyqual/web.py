@@ -32,91 +32,111 @@ class DB:
 
 """ Views
 """
-class PqJson:
-    def index(self):
-        return ''
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def test(self, test_id):
+#@cherrypy.expose
+@cherrypy.tools.json_out()
+class Test:
+    exposed = True
+    def GET(self, test_id = None):
         """ Return JSON detail of a test
         """
         db = DB()
         cur = db.connect(settings.DSN)
-        cur.execute("""SELECT
-                            test_id, 
-                            t.name, 
-                            lastrun, 
-                            schedule_id, 
-                            database_id,
-                            test_type_id,
-                            sql,
-                            python
-                            FROM pq_test t
-                            LEFT JOIN pq_schedule s USING (schedule_id)
-                            LEFT JOIN pq_database d USING (database_id)
-                            WHERE test_id = %s
-                            ORDER BY lastrun;""", test_id)
 
-        if cur.rowcount > 0:
-            test = cur.fetchone()
-            t = {
-                'test_id':          test['test_id'],
-                'name':             test['name'],
-                'lastrun':          test['lastrun'],
-                'schedule_id':      test['schedule_id'],
-                'database_id':      test['database_id'],
-                'test_type_id':     test['test_type_id'],
-                'sql':              test['sql'],
-                'python':           test['python']
-            }
+        def multiple(self):
+            """ Return JSON of tests in the DB
+            """
+            cur.execute("""SELECT
+                                test_id, 
+                                t.name, 
+                                lastrun, 
+                                schedule_id, 
+                                s.name AS schedule_name, 
+                                database_id,
+                                d.name AS database_name
+                                FROM pq_test t
+                                LEFT JOIN pq_schedule s USING (schedule_id)
+                                LEFT JOIN pq_database d USING (database_id)
+                                ORDER BY lastrun;""")
+
+            tests = []
+            for test in cur.fetchall():
+                t = {
+                    'test_id':          test['test_id'],
+                    'name':             test['name'],
+                    'lastrun':          test['lastrun'],
+                    'schedule_id':      test['schedule_id'],
+                    'schedule_name':    test['schedule_name'],
+                    'database_id':      test['database_id'],
+                    'database_name':    test['database_name'],
+                }
+                tests.append(t)
+
+            return tests
+
+        def single(self):
+
+            cur.execute("""SELECT
+                                test_id, 
+                                t.name, 
+                                lastrun, 
+                                schedule_id, 
+                                database_id,
+                                test_type_id,
+                                sql,
+                                python
+                                FROM pq_test t
+                                LEFT JOIN pq_schedule s USING (schedule_id)
+                                LEFT JOIN pq_database d USING (database_id)
+                                WHERE test_id = %s
+                                ORDER BY lastrun;""", test_id)
+
+            if cur.rowcount > 0:
+                test = cur.fetchone()
+                t = {
+                    'test_id':          test['test_id'],
+                    'name':             test['name'],
+                    'lastrun':          test['lastrun'],
+                    'schedule_id':      test['schedule_id'],
+                    'database_id':      test['database_id'],
+                    'test_type_id':     test['test_type_id'],
+                    'sql':              test['sql'],
+                    'python':           test['python']
+                }
+            else:
+                raise cherrypy.HTTPError(404) 
+
+            db.disconnect()
+            return t
+
+        if test_id:
+            return single(self)
         else:
-            raise cherrypy.HTTPError(404) 
-
-        db.disconnect()
-
-        return t
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def tests(self):
-        """ Return JSON of tests in the DB
+            return multiple(self)
+            
+    def POST(
+        self, 
+        test_id, 
+        name = None, 
+        schedule_id = None, 
+        database_id = None, 
+        test_type_id = None, 
+        sql = None, 
+        python = None):
+        """ Insert/update a test
         """
-        db = DB()
-        cur = db.connect(settings.DSN)
-        cur.execute("""SELECT
-                            test_id, 
-                            t.name, 
-                            lastrun, 
-                            schedule_id, 
-                            s.name AS schedule_name, 
-                            database_id,
-                            d.name AS database_name
-                            FROM pq_test t
-                            LEFT JOIN pq_schedule s USING (schedule_id)
-                            LEFT JOIN pq_database d USING (database_id)
-                            ORDER BY lastrun;""")
 
-        tests = []
-        for test in cur.fetchall():
-            t = {
-                'test_id':          test['test_id'],
-                'name':             test['name'],
-                'lastrun':          test['lastrun'],
-                'schedule_id':      test['schedule_id'],
-                'schedule_name':    test['schedule_name'],
-                'database_id':      test['database_id'],
-                'database_name':    test['database_name'],
-            }
-            tests.append(t)
+        # sanity checks
+        print type(test_id)
 
-        db.disconnect()
+        return { 
+            'result': 'failure',
+            'message': 'Not yet done'
+        }
 
-        return tests
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def databases(self):
+@cherrypy.tools.json_out()
+class Database:
+    exposed = True
+    def GET(self):
         """ Return JSON of known databases
         """
         db = DB()
@@ -139,9 +159,10 @@ class PqJson:
 
         return dbs
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def users(self):
+@cherrypy.tools.json_out()
+class User:
+    exposed = True
+    def GET(self):
         """ Return JSON of users
         """
         db = DB()
@@ -161,9 +182,10 @@ class PqJson:
 
         return users
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def test_types(self):
+@cherrypy.tools.json_out()
+class TestType:
+    exposed = True
+    def GET(self):
         """ Return JSON of test types
         """
         db = DB()
@@ -182,9 +204,10 @@ class PqJson:
 
         return types
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def schedules(self):
+@cherrypy.tools.json_out()
+class Schedule:
+    exposed = True
+    def GET(self):
         """ Return JSON of schedules
         """
         db = DB()
@@ -203,10 +226,17 @@ class PqJson:
 
         return schedules
 
+class JSON(object): 
+    def GET(self):
+        raise HTTPError(404)
+
 class Pyqual:
-    j = PqJson()
+    exposed = True
+    j = JSON()
+    j.test = Test()
+    #j.test = PqTest()
     @cherrypy.expose
-    def index(self):
+    def GET(self):
         """ Main page
         """
         f = open(settings.APP_ROOT + '/templates/main.html')
