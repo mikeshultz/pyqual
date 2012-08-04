@@ -9,6 +9,9 @@ cherrypy.config.update(settings.CP_CONFIG)
 
 """ Helper objects
 """
+class Updated(object): pass
+class Inserted(object): pass
+
 class DB:
     """ Simple DB wrapper
     """
@@ -25,6 +28,12 @@ class DB:
         self.connection = psycopg2.connect(dsn)
         self.cursor = self.connection.cursor(cursor_factory=pg_extras.DictCursor)
         return self.cursor
+
+    def commit(self, *args, **kwargs):
+        return self.connection.commit(*args, **kwargs)
+
+    def rollback(self, *args, **kwargs):
+        return self.connection.commit(*args, **kwargs)
 
     def disconnect(self):
         self.cursor.close()
@@ -115,7 +124,7 @@ class Test:
             
     def POST(
         self, 
-        test_id, 
+        test_id = None, 
         name = None, 
         schedule_id = None, 
         database_id = None, 
@@ -128,59 +137,220 @@ class Test:
         # sanity checks
         print type(test_id)
 
-        return { 
-            'result': 'failure',
-            'message': 'Not yet done'
-        }
+        # do
+        action = None
+        db = DB()
+        cur = db.connect(settings.DSN)
+
+        #cur.execute("""SELECT TRUE AS exist FROM pq_test WHERE test_id = %s""" % test_id)
+        #res = cur.fetchone()
+        #if res['exist']:
+        if test_id:
+            cur.execute(
+                """UPDATE pq_test 
+                    SET 
+                        name = %s,
+                        schedule_id = %s,
+                        database_id = %s,
+                        test_type_id = %s,
+                        sql = %s,
+                        python = %s
+                    WHERE test_id = %s;""", 
+                    (name, schedule_id, database_id, test_type_id, sql, python, test_id)
+            )
+            action = Updated()
+        else:
+            cur.execute(
+                """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, sql, python) VALUES (%s,%s,%s,%s,%s,%s);""",
+                (name, schedule_id, database_id, test_type_id, sql, python, test_id)
+            )
+            action = Inserted()
+
+        if cur.rowcount > 0:
+            db.commit()
+            db.disconnect()
+            if type(action) == type(Updated()):
+                return { 'result': 'success', 'message': 'Test updated successfully.'}
+            elif type(action) == type(Inserted()):
+                return { 'result': 'success', 'message': 'Test added successfully.'}
+            else:
+                return { 'result': 'failure', 'message': 'Something was successful?  Add/update reported successful, but we have no idea what happened.'}
+        else:
+            db.rollback()
+            db.disconnect()
+            return { 
+                'result': 'failure',
+                'message': 'Add/update failed.'
+            }
 
 @cherrypy.tools.json_out()
 class Database:
     exposed = True
-    def GET(self):
-        """ Return JSON of known databases
-        """
-        db = DB()
-        cur = db.connect(settings.DSN)
-        cur.execute("SELECT database_id, name, username, port, hostname, active FROM pq_database ORDER BY name, hostname;")
+    def GET(self, database_id = None):
+        def multiple(self):
+            """ Return JSON of known databases
+            """
+            db = DB()
+            cur = db.connect(settings.DSN)
+            cur.execute("SELECT database_id, name, username, password, port, hostname, active FROM pq_database ORDER BY name, hostname;")
 
-        dbs = []
-        for dbase in cur.fetchall():
-            d = {
+            dbs = []
+            for dbase in cur.fetchall():
+                d = {
+                    'database_id':  dbase['database_id'],
+                    'name':         dbase['name'],
+                    'username':     dbase['username'],
+                    'password':     dbase['password'],
+                    'port':         dbase['port'],
+                    'hostname':     dbase['hostname'],
+                    'active':       dbase['active'],
+                }
+                dbs.append(d)
+
+            db.disconnect()
+
+            return dbs
+
+        def single(self, test_id):
+            """ Return JSON of known databases
+            """
+            db = DB()
+            cur = db.connect(settings.DSN)
+            cur.execute("SELECT database_id, name, username, password, port, hostname, active FROM pq_database ORDER BY name, hostname;")
+            dbase = cur.fetchone()
+            db.disconnect()
+
+            return {
                 'database_id':  dbase['database_id'],
                 'name':         dbase['name'],
                 'username':     dbase['username'],
+                'password':     dbase['password'],
                 'port':         dbase['port'],
                 'hostname':     dbase['hostname'],
                 'active':       dbase['active'],
             }
-            dbs.append(d)
 
-        db.disconnect()
+        if database_id:
+            return single(self, database_id)
+        else:
+            return multiple(self)
 
-        return dbs
+    def POST(
+        self,
+        name,
+        username,
+        password,
+        hostname,
+        database_id = None,
+        port = 5432,
+        active = True
+    ):
+         # do
+        action = None
+        db = DB()
+        cur = db.connect(settings.DSN)
+
+        if database_id:
+            cur.execute(
+                """UPDATE pq_database 
+                    SET 
+                        name = %s,
+                        username = %s,
+                        password = %s,
+                        port = %s,
+                        hostname = %s,
+                        active = %s
+                    WHERE database_id = %s;""", 
+                    (name, username, password, port, hostname, active, database_id)
+            )
+            action = Updated()
+        else:
+            cur.execute(
+                """INSERT INTO pq_database (name, username, password, port, hostname, active) VALUES (%s,%s,%s,%s,%s,%s,%s);""",
+                (name, username, password, port, hostname, active)
+            )
+            action = Inserted()
+
+        if cur.rowcount > 0:
+            db.commit()
+            db.disconnect()
+            if type(action) == type(Updated()):
+                return { 'result': 'success', 'message': 'Database updated successfully.'}
+            elif type(action) == type(Inserted()):
+                return { 'result': 'success', 'message': 'Database added successfully.'}
+            else:
+                return { 'result': 'failure', 'message': 'Something was successful?  Add/update reported successful, but we have no idea what happened.'}
+        else:
+            db.rollback()
+            db.disconnect()
+            return { 
+                'result': 'failure',
+                'message': 'Add/update failed.'
+            }
+
+@cherrypy.tools.json_out()
+class UserCheck:
+    exposed = True
+    def GET(self, username):
+        """ Check if a username is unique/unused
+        """
+        db = DB()
+        cur = db.connect(settings.DSN)
+        cur.execute("SELECT true FROM pq_user WHERE username = %s", (username, ))
+        if cur.rowcount > 0:
+            return { 'available': False, }
+        else:
+            return { 'available': True, }
 
 @cherrypy.tools.json_out()
 class User:
     exposed = True
-    def GET(self):
+    def GET(self, user_id = None):
         """ Return JSON of users
         """
-        db = DB()
-        cur = db.connect(settings.DSN)
-        cur.execute("SELECT user_id, username, email FROM pq_user ORDER BY username;")
+        def multiple(self):
+            db = DB()
+            cur = db.connect(settings.DSN)
+            cur.execute("SELECT user_id, username, email FROM pq_user ORDER BY username;")
 
-        users = []
-        for user in cur.fetchall():
-            u = {
+            users = []
+            for user in cur.fetchall():
+                u = {
+                    'user_id':      user['user_id'],
+                    'username':     user['username'],
+                    'email':        user['email']
+                }
+                users.append(u)
+
+            db.disconnect()
+
+            return users
+
+        def single(self, user_id):
+            db = DB()
+            cur = db.connect(settings.DSN)
+            cur.execute("SELECT user_id, username, email FROM pq_user WHERE user_id = %s ORDER BY username;", (user_id, ))
+            user = cur.fetchone()
+            db.disconnect()
+
+            return {
                 'user_id':      user['user_id'],
                 'username':     user['username'],
                 'email':        user['email']
             }
-            users.append(u)
 
-        db.disconnect()
+        if user_id:
+            return single(self, user_id)
+        else:
+            return multiple(self)
 
-        return users
+    def POST(
+        self,
+        username,
+        email,
+        user_id = None
+    ):
+        return {'result': 'fail', 'message': 'Not implemented.'}
 
 @cherrypy.tools.json_out()
 class TestType:
@@ -234,7 +404,12 @@ class Pyqual:
     exposed = True
     j = JSON()
     j.test = Test()
-    #j.test = PqTest()
+    j.database = Database()
+    j.test_type = TestType()
+    j.schedule = Schedule()
+    j.user = User()
+    j.check_user = UserCheck()
+
     @cherrypy.expose
     def GET(self):
         """ Main page

@@ -7,3 +7,9 @@ form label {
             float: left;
             margin-right: 10px;
         }
+
+#tests .btn-group {
+    display: block;
+    float: right;
+    margin-bottom: 10px;
+}
