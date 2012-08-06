@@ -20,11 +20,9 @@ resizeCodeTextarea = function(textarea) {
     var maxrows = 14;
     var lines = str.split("\n");
     $.each(str.split("\n"), function(l) {
-        console.log(l);
         linecount += Math.ceil( l / cols );
     });
     if (linecount > maxrows) { linecount = maxrows; }
-    console.log(cols + ' - ' + linecount + ' - ' + $(this).val());
     $(this).attr('rows', String(linecount + 2));
 };
 
@@ -389,7 +387,6 @@ $(document).ready(function() {
         fakeUrl(page);
         $('.nav .tab').removeClass('active');
         pMatch = page.match(/\#([A-Za-z0-9\-].*)/);
-        console.log(pMatch[0] + '-tab');
         $(pMatch[0] + '-tab').addClass('active');
     });
     
@@ -417,17 +414,13 @@ $(document).ready(function() {
     $('#tests .btn-delete-test').click(function() {
         $(this).button('loading');
         $('#tests input[type=checkbox]').each(function() {
-            console.log($(this));
             if (!$(this).hasClass('check-all')) {
-                console.log('found a box');
                 if ($(this).is(':checked')) {
                     var id = $(this).attr('id');
                     var idPat = /test_id-([0-9]+)/;
                     var matches = id.match(idPat);
-                    console.log(id + '-' + matches)
                     if (matches) {
                         var test_id = matches[1];
-                        console.log('deleting: ' + test_id)
                         site.deleteTest(test_id);
                     }
                 }
@@ -445,17 +438,13 @@ $(document).ready(function() {
     $('#users .btn-delete-user').click(function() {
         $(this).button('loading');
         $('#users input[type=checkbox]').each(function() {
-            console.log($(this));
             if (!$(this).hasClass('check-all')) {
-                console.log('found a box');
                 if ($(this).is(':checked')) {
                     var id = $(this).attr('id');
                     var idPat = /user_id-([0-9]+)/;
                     var matches = id.match(idPat);
-                    console.log(id + '-' + matches)
                     if (matches) {
                         var user_id = matches[1];
-                        console.log('deleting: ' + user_id)
                         site.deleteUser(user_id);
                     }
                 }
@@ -473,17 +462,13 @@ $(document).ready(function() {
     $('#databases .btn-delete-database').click(function() {
         $(this).button('loading');
         $('#databases input[type=checkbox]').each(function() {
-            console.log($(this));
             if (!$(this).hasClass('check-all')) {
-                console.log('found a box');
                 if ($(this).is(':checked')) {
                     var id = $(this).attr('id');
                     var idPat = /database_id-([0-9]+)/;
                     var matches = id.match(idPat);
-                    console.log(id + '-' + matches)
                     if (matches) {
                         var database_id = matches[1];
-                        console.log('deleting: ' + database_id)
                         site.deleteDatabase(database_id);
                     }
                 }

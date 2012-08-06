@@ -141,9 +141,6 @@ class Test:
         """ Insert/update a test
         """
 
-        # sanity checks
-        print type(test_id)
-
         # do
         action = None
         db = DB()
@@ -564,4 +561,3 @@ class Pyqual:
 
 
 cherrypy.quickstart(Pyqual(), '', settings.CP_CONFIG)
-cherrypy.quickstart(Static(), '/static', settings.CP_CONFIG)

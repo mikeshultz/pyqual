@@ -63,9 +63,7 @@ class Auth:
     def login(self, username, password):
         cur = self.db.connect(settings.DSN)
         hash = self.hash(password)
-        print 'Checking with %s/%s' % (username, hash, )
         self.cur.execute("""SELECT user_id FROM pq_user WHERE username = %s AND password = %s;""", (username, hash, ))
-        print 'found: %s      query: %s' % (self.cur.rowcount, self.cur.query, )
         if self.cur.rowcount > 0:
             res = self.cur.fetchone()
             self.user_id = res['user_id']
@@ -96,7 +94,6 @@ class LoginPage:
             f = open(settings.APP_ROOT + '/templates/login.html')
             return f.read()
     def POST(self, username, password):
-        print "Logging in with %s/%s" % (username, password, )
         self.auth.login(username, password)
         if self.auth._authenticated:
             self.auth._setCookie()
