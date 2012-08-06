@@ -1,6 +1,8 @@
 import os, cherrypy, psycopg2
 from psycopg2 import extras as pg_extras
 
+from auth import Auth, LoginPage
+
 import settings
 
 """ Setup
@@ -38,6 +40,11 @@ class DB:
     def disconnect(self):
         self.cursor.close()
         self.connection.close()
+
+""" Init
+"""
+auth = Auth(DB)
+cherrypy.tools.is_authenticated = cherrypy.Tool("on_start_resource", auth.is_authenticated)
 
 """ Views
 """
@@ -183,6 +190,35 @@ class Test:
                 'message': 'Add/update failed.'
             }
 
+    def DELETE(self, test_id):
+        """ Delete a test """
+
+        db = DB()
+        cur = db.connect(settings.DSN)
+
+        cur.execute("""DELETE FROM pq_test WHERE test_id = %s""", (test_id, ))
+        if cur.rowcount == 1:
+            db.commit()
+            db.disconnect()
+            return { 
+                'result': 'success',
+                'message': 'Test deleted successfully.',
+            }
+        elif cur.rowcount > 1:
+            db.rollback()
+            db.disconnect()
+            return {
+                'result': 'failure',
+                'message': 'Delete failed.  Attempt was made to delete more than one record.'
+            }
+        else:
+            db.rollback()
+            db.disconnect()
+            return { 
+                'result': 'failed',
+                'message': 'Test delete failed.',
+            }
+
 @cherrypy.tools.json_out()
 class Database:
     exposed = True
@@ -266,7 +302,7 @@ class Database:
             action = Updated()
         else:
             cur.execute(
-                """INSERT INTO pq_database (name, username, password, port, hostname, active) VALUES (%s,%s,%s,%s,%s,%s,%s);""",
+                """INSERT INTO pq_database (name, username, password, port, hostname, active) VALUES (%s,%s,%s,%s,%s,%s);""",
                 (name, username, password, port, hostname, active)
             )
             action = Inserted()
@@ -286,6 +322,35 @@ class Database:
             return { 
                 'result': 'failure',
                 'message': 'Add/update failed.'
+            }
+
+    def DELETE(self, database_id):
+        """ Delete a database entry """
+
+        db = DB()
+        cur = db.connect(settings.DSN)
+
+        cur.execute("""DELETE FROM pq_database WHERE database_id = %s""", (database_id, ))
+        if cur.rowcount > 0:
+            db.commit()
+            db.disconnect()
+            return { 
+                'result': 'success',
+                'message': 'Database deleted successfully.',
+            }
+        elif cur.rowcount > 1:
+            db.rollback()
+            db.disconnect()
+            return {
+                'result': 'failure',
+                'message': 'Delete failed.  Attempt was made to delete more than one record.'
+            }
+        else:
+            db.rollback()
+            db.disconnect()
+            return { 
+                'result': 'failed',
+                'message': 'Database delete failed.',
             }
 
 @cherrypy.tools.json_out()
@@ -347,10 +412,78 @@ class User:
     def POST(
         self,
         username,
+        password,
         email,
         user_id = None
     ):
-        return {'result': 'fail', 'message': 'Not implemented.'}
+         # do
+        action = None
+        db = DB()
+        cur = db.connect(settings.DSN)
+
+        if user_id:
+            cur.execute(
+                """UPDATE pq_user 
+                    SET 
+                        username = %s,
+                        password = %s,
+                        email = %s
+                    WHERE user_id = %s;""", 
+                    (username, password, email, user_id)
+            )
+            action = Updated()
+        else:
+            cur.execute(
+                """INSERT INTO pq_user (username, password, email) VALUES (%s,%s,%s);""",
+                (username, password, email)
+            )
+            action = Inserted()
+
+        if cur.rowcount > 0:
+            db.commit()
+            db.disconnect()
+            if type(action) == type(Updated()):
+                return { 'result': 'success', 'message': 'User updated successfully.'}
+            elif type(action) == type(Inserted()):
+                return { 'result': 'success', 'message': 'User added successfully.'}
+            else:
+                return { 'result': 'failure', 'message': 'Something was successful?  Add/update reported successful, but we have no idea what happened.'}
+        else:
+            db.rollback()
+            db.disconnect()
+            return { 
+                'result': 'failure',
+                'message': 'Add/update failed.'
+            }
+
+    def DELETE(self, user_id):
+        """ Delete a user """
+
+        db = DB()
+        cur = db.connect(settings.DSN)
+
+        cur.execute("""DELETE FROM pq_user WHERE user_id = %s""", (user_id, ))
+        if cur.rowcount > 0:
+            db.commit()
+            db.disconnect()
+            return { 
+                'result': 'success',
+                'message': 'User deleted successfully.',
+            }
+        elif cur.rowcount > 1:
+            db.rollback()
+            db.disconnect()
+            return {
+                'result': 'failure',
+                'message': 'Delete failed.  Attempt was made to delete more than one record.'
+            }
+        else:
+            db.rollback()
+            db.disconnect()
+            return { 
+                'result': 'failed',
+                'message': 'User delete failed.',
+            }
 
 @cherrypy.tools.json_out()
 class TestType:
@@ -400,8 +533,22 @@ class JSON(object):
     def GET(self):
         raise HTTPError(404)
 
+class Static(object):
+    def GET(self):
+        return ''
+
+class Index(object):
+    exposed = True
+    @cherrypy.tools.is_authenticated()
+    def GET(self):
+        """ Main page
+        """
+        f = open(settings.APP_ROOT + '/templates/main.html')
+        return f.read()
+
 class Pyqual:
     exposed = True
+    pyqual = Index()
     j = JSON()
     j.test = Test()
     j.database = Database()
@@ -409,13 +556,12 @@ class Pyqual:
     j.schedule = Schedule()
     j.user = User()
     j.check_user = UserCheck()
+    login = LoginPage(auth)
 
-    @cherrypy.expose
     def GET(self):
-        """ Main page
-        """
-        f = open(settings.APP_ROOT + '/templates/main.html')
-        return f.read()
+        raise cherrypy.HTTPRedirect('/pyqual')
+
+
 
 cherrypy.quickstart(Pyqual(), '', settings.CP_CONFIG)
-#cherrypy.quickstart(PqJson(), '/j', settings.CP_CONFIG)
+cherrypy.quickstart(Static(), '/static', settings.CP_CONFIG)

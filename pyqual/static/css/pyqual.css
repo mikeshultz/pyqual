@@ -8,8 +8,15 @@ form label {
             margin-right: 10px;
         }
 
-#tests .btn-group {
+#tests .btn-group,
+#users .btn-group,
+#databases .btn-group {
     display: block;
     float: right;
+    margin-bottom: 10px;
+}
+
+#login-form {}
+#login-form fieldset {
     margin-bottom: 10px;
 }

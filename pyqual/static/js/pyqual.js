@@ -43,6 +43,28 @@ var Pq = function() {
 };
 
 Pq.prototype = {
+    login: function(username, password) {
+        data = {
+            'username': username,
+            'password': password
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/login',
+            data: data,
+            success: function(data, status, jq) {
+                if (data['result'] == 'success') {
+                    window.location = '/';
+                } else {
+                    $('#login-alert').alert();
+                    $('#login-alert .alert-heading').html('Login Failed!');
+                    $('#login-alert .alert-body').html(data['message']);
+                    $('#login-alert').removeClass('hide') 
+                }
+            },
+            dataType: 'json'
+        });
+    },
     loadTests: function() {
         $.getJSON('j/test', function(data) {
             var html = '';
@@ -68,6 +90,7 @@ Pq.prototype = {
             $('#test-database').append($("<option />").val(-1).text(''));
             $.each(data, function(key, val) {
                 html += '<tr id="' + val['database_id'] + '">';
+                html += '<td><input type="checkbox" id="database_id-' + val['database_id'] + '" /></td>';
                 html += '<td><a onclick="site.getDatabaseDetail(' + val['database_id'] + '); return false;" href="#database:' + val['database_id'] + '">' + val['database_id'] + '</a></td>'
                 html += '<td><a onclick="site.getDatabaseDetail(' + val['database_id'] + '); return false;" href="#database:' + val['database_id'] + '">' + val['name'] + '</a></td>';
                 html += '<td>' + val['username'] + '</td>';
@@ -89,6 +112,7 @@ Pq.prototype = {
 
             $.each(data, function(key, val) {
                 html += '<tr id="' + val['user_id'] + '">';
+                html += '<td><input type="checkbox" id="user_id-' + val['user_id'] + '" /></td>';
                 html += '<td><a onclick="site.getUserDetail(' + val['user_id'] + '); return false;" href="#user:' + val['user_id'] + '">' + val['user_id'] + '</a></td>';
                 html += '<td><a onclick="site.getUserDetail(' + val['user_id'] + '); return false;" href="#user:' + val['user_id'] + '">' + val['username'] + '</a></td>';
                 html += '<td>' + val['email'] + '</td>';
@@ -188,6 +212,18 @@ Pq.prototype = {
             dataType: 'json'
         });
     },
+    deleteTest: function(test_id) {
+        if (test_id) {
+            $.ajax({
+                type: 'DELETE',
+                url: 'j/test/' + test_id,
+                success: function(data, status, jq) {
+                    showResult(data);
+                },
+                dataType: 'json'
+            });
+        }
+    },
     getUserDetail: function(user_id) {
         var selected = {};
         var user_id = user_id || null;
@@ -214,8 +250,9 @@ Pq.prototype = {
         testForm.find('#user-password').val() != testForm.find('#user-password2').val() ? valid = false : true;
         isNaN(parseFloat(testForm.find('#user-id').val())) || !isFinite(testForm.find('#user-id').val()) ? valid = false : true;
 
-        url = 'j/user/' + testForm.find('#user-id').val();
+        url = 'j/user';
         data = {
+            'user_id':      testForm.find('#user-id').val(),
             'username':     testForm.find('#user-username').val(),
             'email':        testForm.find('#user-email').val(),
             'password':     testForm.find('#user-password').val()
@@ -231,19 +268,30 @@ Pq.prototype = {
                 } else {
                     $('#user-detail-alert').alert();
                     $('#user-detail-alert .alert-heading').html('Save Failed!');
-                    $('#usert-detail-alert .alert-body').html(data['message']);
+                    $('#user-detail-alert .alert-body').html(data['message']);
                     $('#user-detail-alert').removeClass('hide') 
                 }
             },
             dataType: 'json'
         });
     },
+    deleteUser: function(user_id) {
+        if (user_id) {
+            $.ajax({
+                type: 'DELETE',
+                url: 'j/user/' + user_id,
+                success: function(data, status, jq) {
+                    showResult(data);
+                },
+                dataType: 'json'
+            });
+        }
+    },
     getDatabaseDetail: function(database_id) {
         var database_id = database_id || null;
         // If there's no database_id, assume we're adding a new one
         if (database_id) {
             $.getJSON('j/database/' + database_id, function(data) {
-                alert(data['database_id']);
                 $('#database-id').val(data['database_id']);
                 $('#database-name').val(data['name']);
                 $('#database-username').val(data['username']);
@@ -262,10 +310,10 @@ Pq.prototype = {
         });
     },
     saveDatabase: function(testForm) {
-        url = 'j/database/' + testForm.find('#database-id').val();
+        url = 'j/database';
         data = {
             'database_id':  testForm.find('#database-id').val(),
-            'name':         testForm.find('#databaset-name').val(),
+            'name':         testForm.find('#database-name').val(),
             'username':     testForm.find('#database-username').val(),
             'password':     testForm.find('#database-password').val(),
             'hostname':     testForm.find('#database-hostname').val(),
@@ -289,7 +337,19 @@ Pq.prototype = {
             },
             dataType: 'json'
         });
-    }
+    },
+    deleteDatabase: function(database_id) {
+        if (database_id) {
+            $.ajax({
+                type: 'DELETE',
+                url: 'j/database/' + database_id,
+                success: function(data, status, jq) {
+                    showResult(data);
+                },
+                dataType: 'json'
+            });
+        }
+    },
  };
  var PqValid = function () {
     this.version = Pq.version;
@@ -350,12 +410,85 @@ $(document).ready(function() {
     $('#tests .btn-add-test').button();
     $('#tests .btn-add-test').click(function() {
         $(this).button('loading');
-        /*$('#test-detail-form input').each(function() {
-            $(this).val('');
-        });*/
         site.getTestDetail();
-        //$('#test-detail').modal();
-        //$('#test-detail').removeClass('hide');
+        $(this).button('reset');
+    });
+    $('#tests .btn-delete-test').button();
+    $('#tests .btn-delete-test').click(function() {
+        $(this).button('loading');
+        $('#tests input[type=checkbox]').each(function() {
+            console.log($(this));
+            if (!$(this).hasClass('check-all')) {
+                console.log('found a box');
+                if ($(this).is(':checked')) {
+                    var id = $(this).attr('id');
+                    var idPat = /test_id-([0-9]+)/;
+                    var matches = id.match(idPat);
+                    console.log(id + '-' + matches)
+                    if (matches) {
+                        var test_id = matches[1];
+                        console.log('deleting: ' + test_id)
+                        site.deleteTest(test_id);
+                    }
+                }
+            }
+        });
+        $(this).button('reset');
+    });
+    $('#users .btn-add-user').button();
+    $('#users .btn-add-user').click(function() {
+        $(this).button('loading');
+        site.getUserDetail();
+        $(this).button('reset');
+    });
+    $('#users .btn-delete-user').button();
+    $('#users .btn-delete-user').click(function() {
+        $(this).button('loading');
+        $('#users input[type=checkbox]').each(function() {
+            console.log($(this));
+            if (!$(this).hasClass('check-all')) {
+                console.log('found a box');
+                if ($(this).is(':checked')) {
+                    var id = $(this).attr('id');
+                    var idPat = /user_id-([0-9]+)/;
+                    var matches = id.match(idPat);
+                    console.log(id + '-' + matches)
+                    if (matches) {
+                        var user_id = matches[1];
+                        console.log('deleting: ' + user_id)
+                        site.deleteUser(user_id);
+                    }
+                }
+            }
+        });
+        $(this).button('reset');
+    });
+    $('#databases .btn-add-database').button();
+    $('#databases .btn-add-database').click(function() {
+        $(this).button('loading');
+        site.getDatabaseDetail();
+        $(this).button('reset');
+    });
+    $('#databases .btn-delete-database').button();
+    $('#databases .btn-delete-database').click(function() {
+        $(this).button('loading');
+        $('#databases input[type=checkbox]').each(function() {
+            console.log($(this));
+            if (!$(this).hasClass('check-all')) {
+                console.log('found a box');
+                if ($(this).is(':checked')) {
+                    var id = $(this).attr('id');
+                    var idPat = /database_id-([0-9]+)/;
+                    var matches = id.match(idPat);
+                    console.log(id + '-' + matches)
+                    if (matches) {
+                        var database_id = matches[1];
+                        console.log('deleting: ' + database_id)
+                        site.deleteDatabase(database_id);
+                    }
+                }
+            }
+        });
         $(this).button('reset');
     });
     $('#test-detail-form').submit(function() {
@@ -370,6 +503,11 @@ $(document).ready(function() {
         site.saveUser($('#user-detail-form'));
         return false;
     });
+    $('#login-form #username').focus();
+    $('#login-form').submit(function() {
+        site.login($('#login-form #username').val(), $('#login-form #password').val());
+        return false;
+    });
 
     /***
      * Validation
@@ -378,40 +516,42 @@ $(document).ready(function() {
     $.validator.addMethod("uniqueUser", function(value, element) { 
         return this.optional(element) || v.checkUsername(value); 
     }, "Username must be unique.");
-    $("#user-detail-form").validate({
-        /*errorContainer: '#errors',
-        errorLabelContainer: '#errors ul',
-        wrapper: 'li',*/
-        debug: true,
-        rules: {
-            'user-username': {
-                required: true,
-                uniqueUser: {
-                    depends: function() {
-                        if ($('#user-id').val() != '' && $('#user-origUsername').val() == $('#user-username').val()) {
-                            return false
-                        } else {
-                            return true
+    if ($("#user-detail-form").length > 0) {
+        $("#user-detail-form").validate({
+            /*errorContainer: '#errors',
+            errorLabelContainer: '#errors ul',
+            wrapper: 'li',*/
+            debug: true,
+            rules: {
+                'user-username': {
+                    required: true,
+                    uniqueUser: {
+                        depends: function() {
+                            if ($('#user-id').val() != '' && $('#user-origUsername').val() == $('#user-username').val()) {
+                                return false
+                            } else {
+                                return true
+                            }
                         }
                     }
+                },
+                'user-email': {
+                    required: true,
+                    email: true
+                },
+                'user-password': {
+                    /*depends: v.checkPassword($('#user-password').val(), $('#user-password2').val())*/
+                    equalTo: '#user-password2'
+                },
+                'user-password2': {
+                    /*depends: v.checkPassword($('#user-password').val(), $('#user-password2').val())*/
+                    equalTo: '#user-password'
                 }
             },
-            'user-email': {
-                required: true,
-                email: true
-            },
-            'user-password': {
-                /*depends: v.checkPassword($('#user-password').val(), $('#user-password2').val())*/
-                equalTo: '#user-password2'
-            },
-            'user-password2': {
-                /*depends: v.checkPassword($('#user-password').val(), $('#user-password2').val())*/
-                equalTo: '#user-password'
+            messages: {
+                'user-username': "Username is required and must be unique.",
+                'user-password': 'Passwords must match.'
             }
-        },
-        messages: {
-            'user-username': "Username is required and must be unique.",
-            'user-password': 'Passwords must match.'
-        }
-    });
+        });
+    }
 });

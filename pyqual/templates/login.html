@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Login - Pyqual</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/b/css/bootstrap.css" />
+        <link rel="stylesheet" href="/static/b/css/bootstrap-responsive.min.css" />
+        <link rel="stylesheet" href="/static/css/pyqual.css" />
+
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="row">
+            <div id="login-alert" class="span3 offset3 hide alert alert-error">
+                <button class="close" data-dismiss="alert">x</button>
+                <h4 class="alert-heading">Attention!</h4>
+                <span class="alert-body">Woah, buddy!</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span3 offset3 well">
+                <form class="form-horizontal" id="login-form">
+                    <fieldset>
+                        <label for="username">Username</label>
+                        <input type="text" id="username" />
+
+                        <label for="password">Password</label>
+                        <input type="password" id="password" />
+                    </fieldset>
+                    <button class="btn-primary" onclick="$('#login-form').submit();">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <script src="/static/js/jquery-1.7.2.min.js"></script>
+        <script src="/static/js/jquery.textarea.js"></script>
+        <script src="/static/js/jquery.validate.js"></script>
+        <script src="/static/b/js/bootstrap.min.js"></script>
+        <script src="/static/b/js/bootstrap-alert.js"></script>
+        <script src="/static/b/js/bootstrap-button.js"></script>
+        <!--<script src="/static/b/js/bootstrap-transition.js"></script>
+        <script src="/static/b/js/bootstrap-modal.js"></script>
+        <script src="/static/b/js/bootstrap-dropdown.js"></script>
+        <script src="/static/b/js/bootstrap-scrollspy.js"></script>
+        <script src="/static/b/js/bootstrap-tab.js"></script>
+        <script src="/static/b/js/bootstrap-tooltip.js"></script>
+        <script src="/static/b/js/bootstrap-popover.js"></script>
+        <script src="/static/b/js/bootstrap-collapse.js"></script>
+        <script src="/static/b/js/bootstrap-carousel.js"></script>
+        <script src="/static/b/js/bootstrap-typeahead.js"></script>//-->
+        <script src="/static/js/pyqual.js"></script>
+    </body>
+</html>
