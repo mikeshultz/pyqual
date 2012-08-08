@@ -2,44 +2,13 @@ import os, cherrypy, psycopg2
 from psycopg2 import extras as pg_extras
 
 from auth import Auth, LoginPage
+from utils import DB, Updated, Inserted
 
 import settings
 
 """ Setup
 """
 cherrypy.config.update(settings.CP_CONFIG)
-
-""" Helper objects
-"""
-class Updated(object): pass
-class Inserted(object): pass
-
-class DB:
-    """ Simple DB wrapper
-    """
-    def __init__(self, dsn = None):
-        self.dsn = ''
-        self.connection = None
-        self.cursor = None
-        if dsn:
-            self.connect(dsn)
-
-    def connect(self, dsn):
-        """ Connect to a DB and return a cursor
-        """
-        self.connection = psycopg2.connect(dsn)
-        self.cursor = self.connection.cursor(cursor_factory=pg_extras.DictCursor)
-        return self.cursor
-
-    def commit(self, *args, **kwargs):
-        return self.connection.commit(*args, **kwargs)
-
-    def rollback(self, *args, **kwargs):
-        return self.connection.commit(*args, **kwargs)
-
-    def disconnect(self):
-        self.cursor.close()
-        self.connection.close()
 
 """ Init
 """
@@ -166,7 +135,7 @@ class Test:
         else:
             cur.execute(
                 """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, sql, python) VALUES (%s,%s,%s,%s,%s,%s);""",
-                (name, schedule_id, database_id, test_type_id, sql, python, test_id)
+                (name, schedule_id, database_id, test_type_id, sql, python)
             )
             action = Inserted()
 

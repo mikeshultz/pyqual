@@ -49,6 +49,16 @@ CREATE TABLE pq_test (
     test_type_id int references pq_test_type(test_type_id),
     database_id int references pq_database(database_id)
 );
+CREATE TABLE pq_log_type (
+    log_type_id serial PRIMARY KEY,
+    name varchar
+);
+CREATE TABLE pq_log (
+    log_id serial PRIMARY KEY,
+    log_type_id int references pq_log_type(log_type_id),
+    test_id int references pq_test(test_id),
+    message text
+);
 
 COPY pq_schedule (schedule_id, name) FROM stdin;
 1	Hourly
@@ -81,8 +91,15 @@ COPY pq_database (database_id, name, username, password, port, hostname, active)
 \.
 
 COPY pq_test (test_id, name, sql, python, created, user_id, schedule_id, test_type_id, database_id) FROM stdin;
-1	'Check for at least 1 super user'	'SELCT COUNT(user_id) FROM pq_user WHERE permission_id = 3;'	'if data[\'count\'] < 1:\n    return false'	'2000-01-01 00:00:01'	1	2	2	1
-2	'Check for rules.'	'SELECT TRUE FROM pq_test LIMIT 1;'	''	'2001-01-01 00:00:01'	1	1	1	1
+1	Check for at least 1 super user	SELECT COUNT(user_id) FROM pq_user JOIN pq_user_permission perm USING (user_id) WHERE user_permission_id = 3;;	if data['count'] < 1:\n    return false	'2000-01-01 00:00:01'	1	2	2	1
+2	Check for rules.	SELECT TRUE FROM pq_test LIMIT 1;		'2001-01-01 00:00:01'	1	1	1	1
+3	Fail check	SELECT FALSE;	result = data[0][0]	'2001-01-01 00:00:01'	1	1	2	1
+\.
+
+COPY pq_log_type (log_type_id, name) FROM stdin;
+1	Info
+2	Warning
+3	Error
 \.
 
 SELECT setval('pq_schedule_schedule_id_seq', (SELECT MAX(schedule_id) FROM pq_schedule)+1);
