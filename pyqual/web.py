@@ -495,6 +495,52 @@ class Schedule:
 
         return schedules
 
+@cherrypy.tools.json_out()
+class Log:
+    exposed = True
+    def GET(self, page = None, total = 100):
+        """ Return JSON of logs
+        """
+        db = DB()
+        cur = db.connect(settings.DSN)
+        try:
+            offset = (int(page) * int(total)) - int(total)
+        except TypeError:
+            offset = 0
+        cur.execute("""SELECT 
+                            log_id, 
+                            lt.log_type_id,
+                            lt.name AS log_type, 
+                            test_id, 
+                            t.name AS test_name, 
+                            message, 
+                            stamp, 
+                            notify 
+                        FROM 
+                            pq_log l 
+                            JOIN pq_log_type lt USING (log_type_id) 
+                            JOIN pq_test t USING (test_id)
+                        ORDER BY stamp DESC 
+                        LIMIT %s OFFSET %s""", (total, offset, ))
+        
+        logs = []
+        for log in cur.fetchall():
+            l = {
+                'log_id': log['log_id'],
+                'log_type': log['log_type'],
+                'log_type_id': log['log_type_id'],
+                'test_id': log['test_id'],
+                'test_name': log['test_name'],
+                'message': log['message'],
+                'stamp': log['stamp'].isoformat(),
+                'notify': log['notify'],
+            }
+            logs.append(l)
+
+        db.disconnect()
+
+        return logs
+
 class JSON(object): 
     def GET(self):
         raise HTTPError(404)
@@ -522,6 +568,7 @@ class Pyqual:
     j.schedule = Schedule()
     j.user = User()
     j.check_user = UserCheck()
+    j.log = Log()
     login = LoginPage(auth)
 
     def GET(self):

@@ -2,6 +2,8 @@
 import psycopg2
 from psycopg2 import extras as pg_extras
 
+dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
+
 class Updated(object): pass
 class Inserted(object): pass
 

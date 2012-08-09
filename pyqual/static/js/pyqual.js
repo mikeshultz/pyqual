@@ -120,6 +120,33 @@ Pq.prototype = {
             $('table#userlist tbody').html(html);
         });
     },
+    loadLogs: function(page) {
+        if (!page) { page = 1; }
+        url = 'j/log?total=50&page=' + page;
+        $.getJSON(url, function(data) {
+            var html = '';
+
+            $.each(data, function(key, val) {
+                css = '';
+                if (val['log_type_id'] == 2) {
+                    css = 'warning';
+                } else if (val['log_type_id'] == 3) {
+                    css = 'error';
+                }
+                html += '<tr id="' + val['log_id'] + '" class="' + css + '">';
+                html += '<td><a onclick="site.getLogDetail(' + val['log_id'] + '); return false;" href="#log:' + val['log_id'] + '">' + val['log_id'] + '</a></td>';
+                html += '<td><a onclick="site.getLogDetail(' + val['log_id'] + '); return false;" href="#log:' + val['log_id'] + '">' + val['log_type'] + '</a></td>';
+                html += '<td>' + val['log_type'] + '</td>';
+                html += '<td>' + val['test_name'] + '</td>';
+                html += '<td>' + val['message'] + '</td>';
+                html += '<td>' + val['stampe'] + '</td>';
+                html += '<td>' + val['notify'] + '</td>';
+                html += '</tr>';
+            });
+
+            $('table#loglist tbody').html(html);
+        });
+    },
     loadSchedules: function() {
         $.getJSON('j/schedule', function(data) {
             $('#test-schedule').html('');
@@ -144,6 +171,7 @@ Pq.prototype = {
         this.loadTests();
         this.loadDatabases();
         this.loadUsers();
+        this.loadLogs();
         this.loadSchedules();
         this.loadTestTypes();
     },

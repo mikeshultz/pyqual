@@ -20,3 +20,24 @@ form label {
 #login-form fieldset {
     margin-bottom: 10px;
 }
+
+tr.error td {
+    color: #B94A48 !important;
+    background-color: #FFECEC !important;
+}
+tr.error:nth-child(odd) td {
+    /*color: #F2DEDE !important;
+    background-color: #B94A48 !important;*/
+    color: #B94A48 !important;
+    background-color: #F2DEDE !important;
+}
+tr.warning td {
+    color: #C09853 !important;
+    background-color: #FFFBE6 !important;
+}
+tr.warning:nth-child(odd) td {
+    /*color: #FCF8E3 !important;
+    background-color: #C09853 !important;*/
+    color: #C09853 !important;
+    background-color: #FCF8E3 !important;
+}
