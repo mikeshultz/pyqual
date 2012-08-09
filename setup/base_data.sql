@@ -57,7 +57,9 @@ CREATE TABLE pq_log (
     log_id serial PRIMARY KEY,
     log_type_id int references pq_log_type(log_type_id),
     test_id int references pq_test(test_id),
-    message text
+    message text,
+    stamp timestamp DEFAULT now(),
+    notify boolean DEFAULT false
 );
 
 COPY pq_schedule (schedule_id, name) FROM stdin;

@@ -1,5 +1,5 @@
 """ Here we'll run all the tests """
-import re
+import re, psycopg2
 import settings
 from utils import DB
 
@@ -84,7 +84,11 @@ if __name__ == '__main__':
                     ORDER BY db.database_id""")
 
     for test in cur.fetchall():
-        testCur.execute(test['sql'])
+        try:
+            testCur.execute(test['sql'])
+        except psycopg2.ProgrammingError, e:
+            message = 'Test failed due to an SQL error: %s' % e.pgerror
+            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
         
         if test['test_type_id'] == 1: # SQL only
             for row in testCur.fetchall():
@@ -92,7 +96,10 @@ if __name__ == '__main__':
                     cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
                     print 'log(0'
         else:
-            data = testCur.fetchall()
+            if testCur.rowcount > 0:
+                data = testCur.fetchall()
+            else:
+                data = None
             try:
                 t = TestPythonWrapper(test['test_id'])
                 t.code = test['python']
@@ -100,6 +107,8 @@ if __name__ == '__main__':
             except RunDenied, e:
                 cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test not run for security reasons.');""", (test['test_id'], ) )
                 print 'log(1'
+            except:
+                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test failed for unknown reasons. Check for previous error.');""", (test['test_id'], ) )
             finally:
                 if t.result != True:
                     cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
