@@ -1,4 +1,4 @@
-import os, cherrypy, psycopg2
+import os, math, cherrypy, psycopg2
 from psycopg2 import extras as pg_extras
 
 from auth import Auth, LoginPage
@@ -503,6 +503,11 @@ class Log:
         """
         db = DB()
         cur = db.connect(settings.DSN)
+        cur.execute("SELECT count(log_id) FROM pq_log;")
+        row = cur.fetchone()
+        log_count = row[0]
+        pages = math.ceil(log_count / int(total))
+        pages = int(math.ceil(float(log_count) / float(total)))
         try:
             offset = (int(page) * int(total)) - int(total)
         except TypeError:
@@ -523,7 +528,14 @@ class Log:
                         ORDER BY stamp DESC 
                         LIMIT %s OFFSET %s""", (total, offset, ))
         
-        logs = []
+        results = {
+            'meta': {
+                'totalLogs': log_count,
+                'pages': pages,
+            },
+            'logs': [],
+        }
+        
         for log in cur.fetchall():
             l = {
                 'log_id': log['log_id'],
@@ -535,11 +547,11 @@ class Log:
                 'stamp': log['stamp'].isoformat(),
                 'notify': log['notify'],
             }
-            logs.append(l)
+            results['logs'].append(l)
 
         db.disconnect()
 
-        return logs
+        return results
 
 class JSON(object): 
     def GET(self):

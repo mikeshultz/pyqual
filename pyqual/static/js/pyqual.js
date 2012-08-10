@@ -122,11 +122,51 @@ Pq.prototype = {
     },
     loadLogs: function(page) {
         if (!page) { page = 1; }
+        currentPage = page;
+        console.log('page: ' + page);
+
         url = 'j/log?total=50&page=' + page;
         $.getJSON(url, function(data) {
             var html = '';
 
-            $.each(data, function(key, val) {
+            /*** Generate the pager **/
+            var totalPages = data['meta']['pages'];
+
+            // Figure out the pages we want to display in the pager
+            if (totalPages < 6) {
+                var pages = []
+                for (i=1;i<=totalPages;i++) {
+                    pages.push(i);
+                }
+            } else if (currentPage < 3) {
+                var pages = [1,2,3,4,5];
+            } else {
+                var pages = [page - 2, page - 1, page, page + 1, page + 2];
+            }
+
+            var disablePages = '';
+            var disableNext = '';
+            var disablePrev = '';
+
+            // figure out if we need to disable any congrols
+            // and what the next and prev is
+            if (totalPages == 1) { disablePages = 'disabled'; }
+            if (currentPage < totalPages) { nextPage = currentPage + 1; } else { disableNext = 'disabled'; }
+            if (currentPage == 1) { disablePrev = 'disabled'; nextPage = currentPage + 1; }
+
+            // generate the pager html
+            var pagerHtml = '<ul><li class="' + disablePages + ' ' + disablePrev + '"><a href="#">&#171;</a></li>';
+            $.each(pages, function(key, val) {
+                console.log(val + ', ' + currentPage);
+                if (val == currentPage) {
+                    css = 'disabled';
+                } else { css = ''; }
+                pagerHtml += '<li class="' + css + '"><a href="#logs" onclick="site.loadLogs(' + val + ');">' + val + '</a></li>';
+            });
+            pagerHtml += '<li class="' + disablePages + ' ' + disableNext + '"><a href="#" onclick="site.loadLogs(' + nextPage + ');">&#187;</a></li></ul>'
+
+            // Populate the logs page
+            $.each(data['logs'], function(key, val) {
                 css = '';
                 if (val['log_type_id'] == 2) {
                     css = 'warning';
@@ -144,7 +184,9 @@ Pq.prototype = {
                 html += '</tr>';
             });
 
+            // display generated html
             $('table#loglist tbody').html(html);
+            $('#logs .pagination').html(pagerHtml);
         });
     },
     loadSchedules: function() {
