@@ -94,7 +94,6 @@ if __name__ == '__main__':
             for row in testCur.fetchall():
                 if row[0] != True:
                     cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
-                    print 'log(0'
         else:
             if testCur.rowcount > 0:
                 data = testCur.fetchall()
@@ -106,17 +105,14 @@ if __name__ == '__main__':
                 t.run({ 'data': data, })
             except RunDenied, e:
                 cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test not run for security reasons.');""", (test['test_id'], ) )
-                print 'log(1'
             except:
                 cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test failed for unknown reasons. Check for previous error.');""", (test['test_id'], ) )
             finally:
                 if t.result != True:
                     cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
-                    print 'log(2'
                 if t.logs:
                     for l in t.logs:
                         cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (%s,%s,%s);""", (l[0], test['test_id'], l[1]))
-                        print 'log(3'
 
             db.commit()
 
