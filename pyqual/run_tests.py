@@ -84,6 +84,8 @@ if __name__ == '__main__':
                     ORDER BY db.database_id""")
 
     for test in cur.fetchall():
+        # update lastrun
+        cur.execute("""UPDATE pq_test SET lastrun = now() WHERE test_id = %s""", (test['test_id'], ))
         try:
             testCur.execute(test['sql'])
         except psycopg2.ProgrammingError, e:
