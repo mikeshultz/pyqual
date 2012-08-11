@@ -80,7 +80,7 @@ class Test:
                 t = {
                     'test_id':          test['test_id'],
                     'name':             test['name'],
-                    'lastrun':          test['lastrun'],
+                    'lastrun':          test['lastrun'].isoformat(),
                     'schedule_id':      test['schedule_id'],
                     'database_id':      test['database_id'],
                     'test_type_id':     test['test_type_id'],
