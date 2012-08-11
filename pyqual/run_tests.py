@@ -64,6 +64,13 @@ if __name__ == '__main__':
     testDb = DB()
     testCur = testDb.connect(settings.DSN)
 
+    """  schedule_id |  name   
+        -------------+---------
+                   1 | Hourly
+                   2 | Daily
+                   3 | Weekly
+                   4 | Monthly
+    """
     cur.execute("""SELECT 
                     test_id, 
                     test.name,
@@ -81,6 +88,16 @@ if __name__ == '__main__':
                         JOIN pq_database db USING (database_id)
                     WHERE
                         db.active IS TRUE
+                        AND CASE WHEN lastrun IS NOT NULL THEN
+                            CASE schedule_id
+                                WHEN 1 THEN INTERVAL '1 hour' <= now() - lastrun
+                                WHEN 2 THEN INTERVAL '1 day' <= now() - lastrun
+                                WHEN 3 THEN INTERVAL '1 week' <= now() - lastrun
+                                WHEN 4 THEN INTERVAL '1 month' <= now() - lastrun
+                                ELSE FALSE
+                            END
+                            ELSE TRUE
+                        END
                     ORDER BY db.database_id""")
 
     for test in cur.fetchall():
