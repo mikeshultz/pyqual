@@ -41,14 +41,18 @@ class Test:
                                 FROM pq_test t
                                 LEFT JOIN pq_schedule s USING (schedule_id)
                                 LEFT JOIN pq_database d USING (database_id)
-                                ORDER BY lastrun;""")
+                                ORDER BY lastrun, test_id;""")
 
             tests = []
             for test in cur.fetchall():
+                try:
+                    lastrun = test['lastrun'].isoformat()
+                except AttributeError:
+                    lastrun = None
                 t = {
                     'test_id':          test['test_id'],
                     'name':             test['name'],
-                    'lastrun':          test['lastrun'].isoformat(),
+                    'lastrun':          lastrun,
                     'schedule_id':      test['schedule_id'],
                     'schedule_name':    test['schedule_name'],
                     'database_id':      test['database_id'],
@@ -77,10 +81,14 @@ class Test:
 
             if cur.rowcount > 0:
                 test = cur.fetchone()
+                try:
+                    lastrun = test['lastrun'].isoformat()
+                except AttributeError:
+                    lastrun = None
                 t = {
                     'test_id':          test['test_id'],
                     'name':             test['name'],
-                    'lastrun':          test['lastrun'].isoformat(),
+                    'lastrun':          lastrun,
                     'schedule_id':      test['schedule_id'],
                     'database_id':      test['database_id'],
                     'test_type_id':     test['test_type_id'],

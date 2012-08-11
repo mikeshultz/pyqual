@@ -1,7 +1,8 @@
 """ Here we'll run all the tests """
-import re, psycopg2
+import re, psycopg2, pickle
 import settings
 from utils import DB
+from test_header import test_header
 
 """ Helpers
 """
@@ -15,6 +16,7 @@ class TestPythonWrapper(object):
         self.compiledCode = None
         self.linesRemoved = 0
         self.result = None
+        self.resultData = None
         self.logs = []
         self.test_id = test_id
     def _cleanCode(self, string = None):
@@ -47,7 +49,7 @@ class TestPythonWrapper(object):
     def setCode(self, string):
         self._codeString = string
         self._cleanCode()
-        self.compiledCode = compile(self._codeString, 'script', 'exec')
+        self.compiledCode = compile(test_header + self._codeString, 'script', 'exec')
     def getCode(self):
         return self._codeString
     code = property(getCode, setCode)
@@ -55,6 +57,7 @@ class TestPythonWrapper(object):
     def run(self, variables = { 'result': None, }):
         exec self.compiledCode in variables
         self.result = variables['result']
+        self.resultData = variables['resultData']
 
 """ Meat
 """
@@ -131,7 +134,6 @@ if __name__ == '__main__':
                     for row in testCur.fetchall():
                         if row[0] != True:
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
-                #else:
                 if testCur.rowcount > 0:
                     data = testCur.fetchall()
                     try:
@@ -144,10 +146,10 @@ if __name__ == '__main__':
                         cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test failed for unknown reasons. Check for previous error.');""", (test['test_id'], ) )
                     finally:
                         if t.result != True:
-                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
+                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test failed!',%s);""", (test['test_id'], pickle.dumps(t.resultData) ) )
                         if t.logs:
                             for l in t.logs:
-                                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (%s,%s,%s);""", (l[0], test['test_id'], l[1]))
+                                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (%s,%s,%s,%s);""", (l[0], test['test_id'], l[1], pickle.dumps(t.resultData)))
 
                     db.commit()
             else:

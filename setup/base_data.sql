@@ -59,7 +59,8 @@ CREATE TABLE pq_log (
     test_id int references pq_test(test_id),
     message text,
     stamp timestamp DEFAULT now(),
-    notify boolean DEFAULT false
+    notify boolean DEFAULT false,
+    result_data text
 );
 
 COPY pq_schedule (schedule_id, name) FROM stdin;
