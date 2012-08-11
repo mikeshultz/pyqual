@@ -174,12 +174,11 @@ Pq.prototype = {
                     css = 'error';
                 }
                 html += '<tr id="' + val['log_id'] + '" class="' + css + '">';
-                html += '<td><a onclick="site.getLogDetail(' + val['log_id'] + '); return false;" href="#log:' + val['log_id'] + '">' + val['log_id'] + '</a></td>';
-                html += '<td><a onclick="site.getLogDetail(' + val['log_id'] + '); return false;" href="#log:' + val['log_id'] + '">' + val['log_type'] + '</a></td>';
+                html += '<td>' + val['log_id'] + '</td>';
                 html += '<td>' + val['log_type'] + '</td>';
-                html += '<td>' + val['test_name'] + '</td>';
+                html += '<td><a onclick="site.getTestDetail(' + val['test_id'] + '); return false;" href="#test:' + val['test_id'] + '" href="#">' + val['test_name'] + '</a></td>';
                 html += '<td>' + val['message'] + '</td>';
-                html += '<td>' + val['stampe'] + '</td>';
+                html += '<td>' + val['stamp'] + '</td>';
                 html += '<td>' + val['notify'] + '</td>';
                 html += '</tr>';
             });
