@@ -61,8 +61,6 @@ class TestPythonWrapper(object):
 if __name__ == '__main__':
     db = DB()
     cur = db.connect(settings.DSN)
-    testDb = DB()
-    testCur = testDb.connect(settings.DSN)
 
     """  schedule_id |  name   
         -------------+---------
@@ -96,44 +94,65 @@ if __name__ == '__main__':
                                 WHEN 4 THEN INTERVAL '1 month' <= now() - lastrun
                                 ELSE FALSE
                             END
-                            ELSE TRUE
+                        ELSE TRUE
                         END
                     ORDER BY db.database_id""")
 
     for test in cur.fetchall():
-        # update lastrun
-        cur.execute("""UPDATE pq_test SET lastrun = now() WHERE test_id = %s""", (test['test_id'], ))
+        testCur = None
         try:
-            testCur.execute(test['sql'])
-        except psycopg2.ProgrammingError, e:
-            message = 'Test failed due to an SQL error: %s' % e.pgerror
+            # connect to target DB 
+            testDSN = "dbname=%s user=%s password=%s port=%s host=%s" % (
+                test['database_name'], 
+                test['database_username'], 
+                test['database_password'], 
+                test['database_port'] or 5432, 
+                test['database_hostname']
+            )
+            testDb = DB()
+            testCur = testDb.connect(testDSN)
+        except psycopg2.OperationalError, e:
+            errMessage = e.pgerror or e or 'Unknown Error'
+            message = 'Test failed due to an SQL or connection error: %s' % errMessage
             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
-        
-        if test['test_type_id'] == 1: # SQL only
-            for row in testCur.fetchall():
-                if row[0] != True:
-                    cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
-        else:
-            if testCur.rowcount > 0:
-                data = testCur.fetchall()
-            else:
-                data = None
-            try:
-                t = TestPythonWrapper(test['test_id'])
-                t.code = test['python']
-                t.run({ 'data': data, })
-            except RunDenied, e:
-                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test not run for security reasons.');""", (test['test_id'], ) )
-            except:
-                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test failed for unknown reasons. Check for previous error.');""", (test['test_id'], ) )
-            finally:
-                if t.result != True:
-                    cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
-                if t.logs:
-                    for l in t.logs:
-                        cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (%s,%s,%s);""", (l[0], test['test_id'], l[1]))
-
             db.commit()
 
-    testDb.disconnect()
+        if testCur:
+            # update lastrun
+            cur.execute("""UPDATE pq_test SET lastrun = now() WHERE test_id = %s""", (test['test_id'], ))
+            try:
+                testCur.execute(test['sql'])
+            except psycopg2.ProgrammingError, e:
+                message = 'Test failed due to an SQL error: %s' % e.pgerror
+                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
+            
+            if testCur.rowcount > 0:
+                if test['test_type_id'] == 1: # SQL only
+                    for row in testCur.fetchall():
+                        if row[0] != True:
+                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
+                #else:
+                if testCur.rowcount > 0:
+                    data = testCur.fetchall()
+                    try:
+                        t = TestPythonWrapper(test['test_id'])
+                        t.code = test['python']
+                        t.run({ 'data': data, })
+                    except RunDenied, e:
+                        cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test not run for security reasons.');""", (test['test_id'], ) )
+                    except:
+                        cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test failed for unknown reasons. Check for previous error.');""", (test['test_id'], ) )
+                    finally:
+                        if t.result != True:
+                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
+                        if t.logs:
+                            for l in t.logs:
+                                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (%s,%s,%s);""", (l[0], test['test_id'], l[1]))
+
+                    db.commit()
+            else:
+                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed! Nothing was returned by the query.');""", (test['test_id'], ) )
+                db.commit()
+
+            testDb.disconnect()
     db.disconnect()

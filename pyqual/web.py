@@ -213,12 +213,12 @@ class Database:
 
             return dbs
 
-        def single(self, test_id):
+        def single(self, database_id):
             """ Return JSON of known databases
             """
             db = DB()
             cur = db.connect(settings.DSN)
-            cur.execute("SELECT database_id, name, username, password, port, hostname, active FROM pq_database ORDER BY name, hostname;")
+            cur.execute("SELECT database_id, name, username, password, port, hostname, active FROM pq_database WHERE database_id = %s ORDER BY name, hostname;", (database_id, ))
             dbase = cur.fetchone()
             db.disconnect()
 
