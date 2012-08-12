@@ -24,8 +24,8 @@ class Auth:
 
     def _startHash(self):
         self.hashObj = hashlib.sha256()
-        """if settings.SALT:
-            self.hash.update(a2b_qp(settings.SALT))"""
+        if settings.SALT:
+            self.hash.update(a2b_qp(settings.SALT))
 
     def _setCookie(self):
         cherrypy.response.cookie['session'] = self.session_id
@@ -55,13 +55,11 @@ class Auth:
             return False
 
     def hash(self, password):
-        #if self.hash.hexdigest():
         self.hashObj = hashlib.sha256()
         self.hashObj.update(a2b_qp(password))
         return self.hashObj.hexdigest()
 
     def login(self, username, password):
-        cur = self.db.connect(settings.DSN)
         hash = self.hash(password)
         self.cur.execute("""SELECT user_id FROM pq_user WHERE username = %s AND password = %s;""", (username, hash, ))
         if self.cur.rowcount > 0:
@@ -80,7 +78,6 @@ class Auth:
             if no_redirect:
                 raise cherrypy.HTTPError(401, "You must be logged in.")
             else:
-                #return cherrypy.HTTPRedirect(['/login', ], 303)
                 raise cherrypy.HTTPRedirect('/login')
 
 class LoginPage:
@@ -103,7 +100,6 @@ class LoginPage:
                     'result': 'success',
                     'message': 'Logged in successfully!'
                 })
-                #return cherrypy.response
             else:
                 raise cherrypy.HTTPRedirect('/')
         else:
@@ -113,6 +109,5 @@ class LoginPage:
                     'result': 'failure',
                     'message': 'Username or password is incorrect.'
                 })
-                #return cherrypy.response
             else:
                 raise cherrypy.HTTPRedirect('/login')
