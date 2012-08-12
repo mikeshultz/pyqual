@@ -386,25 +386,40 @@ class User:
     def POST(
         self,
         username,
-        password,
         email,
+        password = None,
         user_id = None
     ):
+        # clean
+        if user_id:
+            try:
+                user_id = int(user_id)
+            except:
+                return { 'result': 'failure', 'message': 'Invalid user_id'}
          # do
         action = None
         db = DB()
         cur = db.connect(settings.DSN)
-
+        print 'db1'
         if user_id:
+            print 'got user_id'
+            if password:
+                pasSQL = 'password = %s,'
+                vals = (username, password, email, user_id)
+            else:
+                pasSQL = ''
+                vals = (username, email, user_id)
+            print 'running update'
             cur.execute(
                 """UPDATE pq_user 
                     SET 
                         username = %s,
-                        password = %s,
+                        """ + pasSQL + """
                         email = %s
                     WHERE user_id = %s;""", 
-                    (username, password, email, user_id)
+                vals
             )
+            print 'finished running query'
             action = Updated()
         else:
             cur.execute(
@@ -597,3 +612,4 @@ class Pyqual:
 
 
 cherrypy.quickstart(Pyqual(), '', settings.CP_CONFIG)
+del(auth)

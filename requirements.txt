@@ -1,1 +1,2 @@
 cherrypy>=3.2
+dnspython

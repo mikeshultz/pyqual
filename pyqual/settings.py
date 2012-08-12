@@ -12,7 +12,8 @@ DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (DB_NAME, DB_USER, DB_PA
 SALT = ''
 
 # Should notification E-mails be sent out?
-NOTIFY_EMAIL = True
+EMAIL_NOTIFY = True
+EMAIL_SENDER = 'mike@mikeshultz.com'
 
 ### !!!
 # Do not alter the below settings unless you know what you're doing!
