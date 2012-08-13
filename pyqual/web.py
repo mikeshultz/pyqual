@@ -400,16 +400,13 @@ class User:
         action = None
         db = DB()
         cur = db.connect(settings.DSN)
-        print 'db1'
         if user_id:
-            print 'got user_id'
             if password:
                 pasSQL = 'password = %s,'
                 vals = (username, password, email, user_id)
             else:
                 pasSQL = ''
                 vals = (username, email, user_id)
-            print 'running update'
             cur.execute(
                 """UPDATE pq_user 
                     SET 
@@ -419,7 +416,6 @@ class User:
                     WHERE user_id = %s;""", 
                 vals
             )
-            print 'finished running query'
             action = Updated()
         else:
             cur.execute(
