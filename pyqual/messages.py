@@ -13,7 +13,6 @@ class Email(object):
         self.recipient = recipient
         self.subject = subject
     def send(self, sender = None, recipient = None, subject = None):
-        #if subject: self.subject = subject
         self.msg['Subject'] = subject or self.subject
         self.msg['From'] = sender or self.sender
         self.msg['To'] = recipient or self.recipient
@@ -66,7 +65,7 @@ Result Data
     def setResultData(self, resultDataList):
         self._resultDataText = ''
         for d in resultDataList:
-            self._resultDataText += 'Test ID: %s\n%s' % (
+            self._resultDataText += 'Test ID: %s\n%s\n' % (
                 d[0],
                 repr(d[1])
             )

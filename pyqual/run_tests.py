@@ -128,12 +128,14 @@ if __name__ == '__main__':
             except psycopg2.ProgrammingError, e:
                 message = 'Test failed due to an SQL error: %s' % e.pgerror
                 cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
-            
+                db.commit()
+                
             if testCur.rowcount > 0:
                 if test['test_type_id'] == 1: # SQL only
                     for row in testCur.fetchall():
                         if row[0] != True:
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
+                            db.commit()
                 if testCur.rowcount > 0:
                     data = testCur.fetchall()
                     try:
