@@ -259,6 +259,7 @@ Pq.prototype = {
                 $('#test-database').val(data['database_id']);
                 $('#test-schedule').val(data['schedule_id']);
                 $('#test-type').val(data['test_type_id']);
+                $('#test-cc').val(data['cc']);
             });
         } else {
             $('#test-detail-form input, #test-detail-form textarea, #test-detail-form select').val('');
@@ -284,6 +285,7 @@ Pq.prototype = {
             'schedule_id':  testForm.find('#test-schedule').val(),
             'database_id':  testForm.find('#test-database').val(),
             'test_type_id': testForm.find('#test-type').val(),
+            'cc':           testForm.find('#test-cc').val(),
             'sql':          testForm.find('#test-sql').val(),
             'python':       testForm.find('#test-python').val()
         }
@@ -473,25 +475,29 @@ $(document).ready(function() {
 
     loc = String(window.location);
     pMatch = loc.match(/\#([A-Za-z0-9\-]+):*([0-9]*)/);
-    if (pMatch[1] == 'test-detail') {
-        $('#tests').show();
-        $('.nav .tab').removeClass('active');
-        $('#tests-tab').addClass('active');
-        site.getTestDetail(pMatch[2]);
-    } else if (pMatch[1] == 'database') {
-        $('#databases').show();
-        $('.nav .tab').removeClass('active');
-        $('#databasess-tab').addClass('active');
-        site.getDatabaseDetail(pMatch[2]);
-    } else if (pMatch[1] == 'user') {
-        $('#users').show();
-        $('.nav .tab').removeClass('active');
-        $('#users-tab').addClass('active');
-        site.getUserDetail(pMatch[2]);
-    } else if (pMatch[0]) {
-        $(pMatch[0]).show();
-        $('.nav .tab').removeClass('active');
-        $(pMatch[0] + '-tab').addClass('active');
+    if (pMatch) {
+        if (pMatch[1] == 'test-detail') {
+            $('#tests').show();
+            $('.nav .tab').removeClass('active');
+            $('#tests-tab').addClass('active');
+            site.getTestDetail(pMatch[2]);
+        } else if (pMatch[1] == 'database') {
+            $('#databases').show();
+            $('.nav .tab').removeClass('active');
+            $('#databasess-tab').addClass('active');
+            site.getDatabaseDetail(pMatch[2]);
+        } else if (pMatch[1] == 'user') {
+            $('#users').show();
+            $('.nav .tab').removeClass('active');
+            $('#users-tab').addClass('active');
+            site.getUserDetail(pMatch[2]);
+        } else if (pMatch[0]) {
+            $(pMatch[0]).show();
+            $('.nav .tab').removeClass('active');
+            $(pMatch[0] + '-tab').addClass('active');
+        } else  {
+            $('div#tests').show();
+        }
     } else  {
         $('div#tests').show();
     }

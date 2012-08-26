@@ -71,6 +71,7 @@ class Test:
                                 schedule_id, 
                                 database_id,
                                 test_type_id,
+                                cc,
                                 sql,
                                 python
                                 FROM pq_test t
@@ -89,6 +90,7 @@ class Test:
                     'test_id':          test['test_id'],
                     'name':             test['name'],
                     'lastrun':          lastrun,
+                    'cc':               test['cc'],
                     'schedule_id':      test['schedule_id'],
                     'database_id':      test['database_id'],
                     'test_type_id':     test['test_type_id'],
@@ -110,6 +112,7 @@ class Test:
         self, 
         test_id = None, 
         name = None, 
+        cc = None,
         schedule_id = None, 
         database_id = None, 
         test_type_id = None, 
@@ -134,16 +137,17 @@ class Test:
                         schedule_id = %s,
                         database_id = %s,
                         test_type_id = %s,
+                        cc = %s,
                         sql = %s,
                         python = %s
                     WHERE test_id = %s;""", 
-                    (name, schedule_id, database_id, test_type_id, sql, python, test_id)
+                    (name, schedule_id, database_id, test_type_id, cc, sql, python, test_id)
             )
             action = Updated()
         else:
             cur.execute(
-                """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, sql, python) VALUES (%s,%s,%s,%s,%s,%s);""",
-                (name, schedule_id, database_id, test_type_id, sql, python)
+                """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, cc, sql, python) VALUES (%s,%s,%s,%s,%s,%s,%s);""",
+                (name, schedule_id, database_id, test_type_id, cc, sql, python)
             )
             action = Inserted()
 

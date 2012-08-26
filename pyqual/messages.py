@@ -6,22 +6,38 @@ from utils import DB, DNS
 
 class Email(object):
     """ Base object for e-mail messages """
-    def __init__(self, message, subject, sender = None, recipient = None):
+    def __init__(self, message, subject, sender = None, recipient = None, cc = None):
         self._messageText = message
         se.f.msg = None
         self.sender = sender
         self.recipient = recipient
         self.subject = subject
-    def send(self, sender = None, recipient = None, subject = None):
+        self.cc = cc
+    def send(self, sender = None, recipient = None, subject = None, cc = None):
+        ccList = []
+        if cc:
+            self.cc = cc
+        if self.cc:
+            self.msg['Cc'] = self.cc.replace(',', ';')
+            ccList = self.cc.split(',')
         self.msg['Subject'] = subject or self.subject
         self.msg['From'] = sender or self.sender
         self.msg['To'] = recipient or self.recipient
 
-        receivingServer = DNS.getPrimaryMXFromEmail(self.msg['To'])
-        receivingServer = str(receivingServer).rstrip('.')
-        s = smtplib.SMTP(receivingServer)
-        s.sendmail(self.msg['From'], [self.msg['To'], ], self.msg.as_string())
-        s.quit()
+        for r in [self.msg['To'], ] + ccList:
+            receivingServer = DNS.getPrimaryMXFromEmail(r)
+            receivingServer = str(receivingServer).rstrip('.')
+            s = smtplib.SMTP(receivingServer)
+            s.sendmail(self.msg['From'], [r, ], self.msg.as_string())
+            s.quit()
+
+        """if self.cc:
+            for c in self.cc.split(','):
+                receivingServer = DNS.getPrimaryMXFromEmail(c.strip())
+                receivingServer = str(receivingServer).rstrip('.')
+                s = smtplib.SMTP(receivingServer)
+                s.sendmail(self.msg['From'], [c.strip(), ], self.msg.as_string())
+                s.quit()"""
 
 class LogNotify(Email):
     """ Message template for sending logs out """
@@ -29,6 +45,7 @@ class LogNotify(Email):
         self._messageText = ''
 
         self.log_id = -1
+        self.cc = None
 
     def setMessage(self, messageExtra = ''):
         self._messageText = """This is a log test notification from pyqual.  You're receiving this because you are set as the owner of at least one test.
@@ -77,7 +94,7 @@ Result Data
 """
 if __name__ == '__main__':
     """ Handle cli arguments """
-    parser = argparse.ArgumentParser(description='Run pyqual tests logging results to the DB.')
+    parser = argparse.ArgumentParser(description='Send pyqual notifications.')
     parser.add_argument(
         '-d', '--debug', 
         action='store_true',
@@ -89,21 +106,26 @@ if __name__ == '__main__':
     db = DB()
     cur = db.connect(settings.DSN)
 
-    cur.execute("""SELECT log_id, message, t.test_id, t.name, t.lastrun, u.email, result_data FROM pq_log l JOIN pq_test t USING (test_id) JOIN pq_user u USING (user_id) WHERE notify = false ORDER BY u.email, l.stamp DESC, t.lastrun DESC, test_id;""")
+    cur.execute("""SELECT log_id, message, t.test_id, t.name, t.lastrun, u.email, cc, result_data FROM pq_log l JOIN pq_test t USING (test_id) JOIN pq_user u USING (user_id) WHERE notify = false ORDER BY u.email, t.cc, l.stamp DESC, t.lastrun DESC, test_id;""")
 
     currentEmail = ''
+    currentCC = ''
     logs = ()
     pp = pprint.PrettyPrinter(indent=2)
     if cur.rowcount > 0:
         for l in cur.fetchall():
             logs += (l['log_id'], )
-            if l['email'] != currentEmail:
+            if l['email'] != currentEmail or l['cc'] != currentCC:
                 if currentEmail != '':
+                    if args.debug:
+                        print 'Debug: Sending TO: %s CC: %s (120)' % (currentEmail, currentCC)
                     msg.test_results = testResults
                     msg.result_data = resultData
-                    msg.send(settings.EMAIL_SENDER, l['email'], 'Pyqual Test Results')
+                    msg.setMessage()
+                    msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
                 msg = LogNotify()
                 currentEmail = l['email']
+                currentCC = l['cc']
                 testResults = []
                 resultData = []
 
@@ -125,10 +147,12 @@ if __name__ == '__main__':
                         print 'Debug: storing data'
                     resultData.append( (l['test_id'], strData) )
 
+        if args.debug:
+            print 'Debug: Sending TO: %s CC: %s (150)' % (currentEmail, currentCC)
         msg.test_results = testResults
         msg.result_data = resultData
         msg.setMessage()
-        msg.send(settings.EMAIL_SENDER, l['email'], 'Pyqual Test Results')
+        msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
     else:
         if args.debug:
             print "Debug: Nothing to send."

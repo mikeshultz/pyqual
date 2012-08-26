@@ -44,6 +44,7 @@ CREATE TABLE pq_test (
     created timestamp, 
     modified timestamp, 
     lastrun timestamp,
+    cc varchar,
     user_id int references pq_user(user_id), 
     schedule_id int references pq_schedule(schedule_id),
     test_type_id int references pq_test_type(test_type_id),
