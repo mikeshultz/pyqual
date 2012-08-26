@@ -70,13 +70,6 @@ if __name__ == '__main__':
         default=False,
         help='Output debug statements to stdout'
     )
-    """parser.add_argument(
-        '-l', '--logs', 
-        action='store_true',
-        default=False,
-        help='Output log statements to stdout'
-    )"""
-
     args = parser.parse_args()
 
     db = DB()
