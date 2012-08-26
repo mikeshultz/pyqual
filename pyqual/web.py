@@ -544,7 +544,7 @@ class Log:
                             pq_log l 
                             JOIN pq_log_type lt USING (log_type_id) 
                             JOIN pq_test t USING (test_id)
-                        ORDER BY stamp DESC 
+                        ORDER BY stamp DESC, log_id DESC
                         LIMIT %s OFFSET %s""", (total, offset, ))
         
         results = {

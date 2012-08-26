@@ -1,4 +1,4 @@
-import re, smtplib, pickle
+import argparse, re, smtplib, pickle, pprint
 from email.mime.text import MIMEText
 
 import settings
@@ -76,6 +76,16 @@ Result Data
 """ Send out log messages
 """
 if __name__ == '__main__':
+    """ Handle cli arguments """
+    parser = argparse.ArgumentParser(description='Run pyqual tests logging results to the DB.')
+    parser.add_argument(
+        '-d', '--debug', 
+        action='store_true',
+        default=False,
+        help='Output debug statements to stdout'
+    )
+    args = parser.parse_args()
+
     db = DB()
     cur = db.connect(settings.DSN)
 
@@ -83,6 +93,7 @@ if __name__ == '__main__':
 
     currentEmail = ''
     logs = ()
+    pp = pprint.PrettyPrinter(indent=2)
     if cur.rowcount > 0:
         for l in cur.fetchall():
             logs += (l['log_id'], )
@@ -96,7 +107,7 @@ if __name__ == '__main__':
                 testResults = []
                 resultData = []
 
-            if re.search('success', l['message'], re.IGNORECASE):
+            if re.search('passed', l['message'], re.IGNORECASE):
                 result = 'Success'
             elif re.search('fail', l['message'], re.IGNORECASE):
                 result = 'Failure'
@@ -104,15 +115,23 @@ if __name__ == '__main__':
                 result = 'Unknown'
             testResults.append((l['test_id'], l['name'], result))
 
-            if l['result_data']:
-                resultData.append((l['test_id'], pickle.loads(l['result_data'])))
+            if l.get('result_data'):
+                if args.debug:
+                    print 'Debug: Found data'
+                data = pickle.loads(l.get('result_data'))
+                strData = pp.pformat(data)
+                if strData:
+                    if args.debug:
+                        print 'Debug: storing data'
+                    resultData.append( (l['test_id'], strData) )
 
         msg.test_results = testResults
         msg.result_data = resultData
         msg.setMessage()
         msg.send(settings.EMAIL_SENDER, l['email'], 'Pyqual Test Results')
     else:
-        print "Nothing to send."
+        if args.debug:
+            print "Debug: Nothing to send."
 
     if len(logs) > 0:
         cur.execute("UPDATE pq_log SET notify = true WHERE log_id IN %s", (logs, ))
