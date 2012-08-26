@@ -141,7 +141,13 @@ Pq.prototype = {
             } else if (currentPage < 3) {
                 var pages = [1,2,3,4,5];
             } else {
-                var pages = [page - 2, page - 1, page, page + 1, page + 2];
+                var pages = [page - 2, page - 1, page];
+                if (totalPages >= page + 1) {
+                    pages.push(page + 1);
+                }
+                if (totalPages >= page + 2) {
+                    pages.push(page + 2);
+                }
             }
 
             var disablePages = '';
