@@ -250,6 +250,7 @@ Pq.prototype = {
                return -($(this).width() / 2); 
            }
         });
+        resizeCodeTextarea($('textarea.code'));
     },
     saveTest: function(testForm) {
         url = 'j/test/' + testForm.find('#test-id').val();
@@ -463,7 +464,7 @@ $(document).ready(function() {
      * Display
      ***/
     // keep code textareas the right size
-    $('textarea.code').change(resizeCodeTextarea).keydown(resizeCodeTextarea);
+    $('textarea.code').focus(resizeCodeTextarea).change(resizeCodeTextarea).keydown(resizeCodeTextarea);
 
     /***
      * Behavior
