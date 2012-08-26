@@ -41,3 +41,22 @@ tr.warning:nth-child(odd) td {
     color: #C09853 !important;
     background-color: #FCF8E3 !important;
 }
+
+th.sort,
+th.sort:after {
+    cursor: pointer;
+}
+th.sort:after {
+    display: inline-block;
+    position: relative;
+    margin-left: 5px;
+    height: 5px;
+    width: 10px;
+    content: ' ';
+}
+th.asc:after {
+    background: url(/static/img/sort_asc.png) no-repeat;
+}
+th.desc:after {
+    background: url(/static/img/sort_desc.png) no-repeat;
+}

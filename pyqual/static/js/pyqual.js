@@ -79,6 +79,13 @@ Pq.prototype = {
             });
 
             $('table#testlist tbody').html(html);
+
+            $('table#testlist').tablesorter({
+                cssHeader: 'sort',
+                cssAsc: 'sort asc',
+                cssDesc: 'sort desc',
+                headers: { 0: { sorter: false} }
+            });
         });
     },
     loadDatabases: function() {
@@ -102,6 +109,13 @@ Pq.prototype = {
             });
 
             $('table#databaselist tbody').html(html);
+
+            $('table#databaselist').tablesorter({
+                cssAsc: 'sort asc',
+                cssDesc: 'sort desc',
+                cssHeader: 'sort',
+                headers: { 0: { sorter: false} }
+            });
         });
     },
     loadUsers: function() {
@@ -118,6 +132,13 @@ Pq.prototype = {
             });
 
             $('table#userlist tbody').html(html);
+
+            $('table#userlist').tablesorter({
+                cssAsc: 'sort asc',
+                cssDesc: 'sort desc',
+                cssHeader: 'sort',
+                headers: { 0: { sorter: false} }
+            });
         });
     },
     loadLogs: function(page) {
