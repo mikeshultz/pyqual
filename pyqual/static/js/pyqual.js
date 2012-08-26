@@ -96,8 +96,8 @@ Pq.prototype = {
             $.each(data, function(key, val) {
                 html += '<tr id="' + val['database_id'] + '">';
                 html += '<td><input type="checkbox" id="database_id-' + val['database_id'] + '" /></td>';
-                html += '<td><a onclick="site.getDatabaseDetail(' + val['database_id'] + '); return false;" href="#database:' + val['database_id'] + '">' + val['database_id'] + '</a></td>'
-                html += '<td><a onclick="site.getDatabaseDetail(' + val['database_id'] + '); return false;" href="#database:' + val['database_id'] + '">' + val['name'] + '</a></td>';
+                html += '<td><a onclick="site.getDatabaseDetail(' + val['database_id'] + '); fakeUrl(\'#database:' + val['database_id'] + '\'); return false;" href="#database:' + val['database_id'] + '">' + val['database_id'] + '</a></td>'
+                html += '<td><a onclick="site.getDatabaseDetail(' + val['database_id'] + '); fakeUrl(\'#database:' + val['database_id'] + '\'); return false;" href="#database:' + val['database_id'] + '">' + val['name'] + '</a></td>';
                 html += '<td>' + val['username'] + '</td>';
                 html += '<td>' + val['hostname'] + ':' + val['port'] + '</td>';
                 html += '<td>' + val['active'] + '</td>';
@@ -125,8 +125,8 @@ Pq.prototype = {
             $.each(data, function(key, val) {
                 html += '<tr id="' + val['user_id'] + '">';
                 html += '<td><input type="checkbox" id="user_id-' + val['user_id'] + '" /></td>';
-                html += '<td><a onclick="site.getUserDetail(' + val['user_id'] + '); return false;" href="#user:' + val['user_id'] + '">' + val['user_id'] + '</a></td>';
-                html += '<td><a onclick="site.getUserDetail(' + val['user_id'] + '); return false;" href="#user:' + val['user_id'] + '">' + val['username'] + '</a></td>';
+                html += '<td><a onclick="site.getUserDetail(' + val['user_id'] + '); fakeUrl(\'#user:' + val['user_id'] + '\'); return false;" href="#user:' + val['user_id'] + '">' + val['user_id'] + '</a></td>';
+                html += '<td><a onclick="site.getUserDetail(' + val['user_id'] + '); fakeUrl(\'#user:' + val['user_id'] + '\'); return false;" href="#user:' + val['user_id'] + '">' + val['username'] + '</a></td>';
                 html += '<td>' + val['email'] + '</td>';
                 html += '</tr>';
             });
@@ -144,7 +144,6 @@ Pq.prototype = {
     loadLogs: function(page) {
         if (!page) { page = 1; }
         currentPage = page;
-        console.log('page: ' + page);
 
         url = 'j/log?total=50&page=' + page;
         $.getJSON(url, function(data) {
@@ -184,7 +183,6 @@ Pq.prototype = {
             // generate the pager html
             var pagerHtml = '<ul><li class="' + disablePages + ' ' + disablePrev + '"><a href="#">&#171;</a></li>';
             $.each(pages, function(key, val) {
-                console.log(val + ', ' + currentPage);
                 if (val == currentPage) {
                     css = 'disabled';
                 } else { css = ''; }
@@ -472,7 +470,31 @@ $(document).ready(function() {
     $('#firstload').alert('close');
     site = new Pq();
     site.loadAll();
-    $('div#tests').show();
+
+    loc = String(window.location);
+    pMatch = loc.match(/\#([A-Za-z0-9\-]+):*([0-9]*)/);
+    if (pMatch[1] == 'test-detail') {
+        $('#tests').show();
+        $('.nav .tab').removeClass('active');
+        $('#tests-tab').addClass('active');
+        site.getTestDetail(pMatch[2]);
+    } else if (pMatch[1] == 'database') {
+        $('#databases').show();
+        $('.nav .tab').removeClass('active');
+        $('#databasess-tab').addClass('active');
+        site.getDatabaseDetail(pMatch[2]);
+    } else if (pMatch[1] == 'user') {
+        $('#users').show();
+        $('.nav .tab').removeClass('active');
+        $('#users-tab').addClass('active');
+        site.getUserDetail(pMatch[2]);
+    } else if (pMatch[0]) {
+        $(pMatch[0]).show();
+        $('.nav .tab').removeClass('active');
+        $(pMatch[0] + '-tab').addClass('active');
+    } else  {
+        $('div#tests').show();
+    }
 
     /***
      * Navigation 
