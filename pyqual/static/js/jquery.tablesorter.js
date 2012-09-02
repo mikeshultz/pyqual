@@ -543,6 +543,7 @@
                 var h = [];
                 $headers.each(function (offset) {
                     if (!this.sortDisabled) {
+                        $(this).addClass(table.config.cssHeader);
                         h[this.column] = $(this);
                     }
                 });

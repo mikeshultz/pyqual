@@ -84,6 +84,7 @@ Pq.prototype = {
                 cssHeader: 'sort',
                 cssAsc: 'sort asc',
                 cssDesc: 'sort desc',
+                onRenderHeader: true,
                 headers: { 0: { sorter: false} }
             });
         });
