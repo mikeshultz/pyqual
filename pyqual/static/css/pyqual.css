@@ -50,9 +50,12 @@ tr.error td {
     color: #B94A48 !important;
     background-color: #FFECEC !important;
 }
+tr.error:hover td,
+tr.error:nth-child(odd):hover td {
+    color: #B94A48 !important;
+    background-color: #FDEAEA !important;
+}
 tr.error:nth-child(odd) td {
-    /*color: #F2DEDE !important;
-    background-color: #B94A48 !important;*/
     color: #B94A48 !important;
     background-color: #F2DEDE !important;
 }
@@ -60,9 +63,12 @@ tr.warning td {
     color: #C09853 !important;
     background-color: #FFFBE6 !important;
 }
+tr.warning:hover td,
+tr.warning:nth-child(odd):hover td {
+    color: #C09853 !important;
+    background-color: #FAF6E1 !important;
+}
 tr.warning:nth-child(odd) td {
-    /*color: #FCF8E3 !important;
-    background-color: #C09853 !important;*/
     color: #C09853 !important;
     background-color: #FCF8E3 !important;
 }
