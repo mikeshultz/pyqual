@@ -3,6 +3,7 @@ from datetime import datetime
 from binascii import a2b_qp
 
 import settings
+from templait import Templait
 
 class Auth:
     """ Authentication handling """
@@ -88,8 +89,8 @@ class LoginPage:
         if self.auth._authenticated:
             raise cherrypy.HTTPRedirect('/')
         else:
-            f = open(settings.APP_ROOT + '/templates/login.html')
-            return f.read()
+            t = Templait(settings.APP_ROOT + '/templates/login.html')
+            return t.render()
     def POST(self, username, password):
         self.auth.login(username, password)
         if self.auth._authenticated:

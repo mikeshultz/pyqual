@@ -1,3 +1,28 @@
+body {
+    font-size: .8em;
+}
+
+#brand {
+    font-family: sans-serif;
+    font-size: 150%;
+    font-weight: bold;
+    background: #080;
+    position: absolute;
+    top: 0;
+    right: 40px;
+    display: block;
+    padding: 0 10px 10px;
+    border-radius: 0 0 5px 5px;
+}
+    #brand a { color: #EFE; }
+    #brand a:hover { text-decoration: none; }
+
+#copy { color: #CCC; width: 100%; }
+    #copy div {
+        margin: 0px auto;
+        width: 350px;
+    }
+
 form label {
     margin-top: 5px;
 }

@@ -3,6 +3,7 @@ from psycopg2 import extras as pg_extras
 
 from auth import Auth, LoginPage
 from utils import DB, Updated, Inserted
+from templait import Templait
 
 import settings
 
@@ -609,8 +610,14 @@ class Index(object):
     def GET(self):
         """ Main page
         """
-        f = open(settings.APP_ROOT + '/templates/main.html')
-        return f.read()
+        
+        t = Templait(
+            settings.APP_ROOT + '/templates/main.html', 
+            { 
+                'version': settings.VERSION, 
+            }
+        )
+        return t.render()
 
 class Pyqual:
     exposed = True

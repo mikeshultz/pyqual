@@ -1,5 +1,7 @@
 import os, cherrypy
 
+VERSION = 'beta-0.1.2'
+
 # Control database connection settings
 DB_HOST = 'localhost'
 DB_NAME = 'pyqual'
