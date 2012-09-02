@@ -1,4 +1,4 @@
-import os, math, cherrypy, psycopg2
+import os, math, cherrypy, psycopg2, argparse
 from psycopg2 import extras as pg_extras
 
 from auth import Auth, LoginPage
@@ -14,6 +14,25 @@ cherrypy.config.update(settings.CP_CONFIG)
 """
 auth = Auth(DB)
 cherrypy.tools.is_authenticated = cherrypy.Tool("on_start_resource", auth.is_authenticated)
+
+parser = argparse.ArgumentParser(description='Run the Pyqual Web interface.')
+parser.add_argument(
+    '-n', '--host',
+    metavar='ADDR', 
+    type=str, 
+    nargs='?',
+    default='localhost',
+    help="Hostname or IP address to bind to. '0.0.0.0' and '::' bind to all available IPv4 and IPv6 addresses respectively. Default: localhost"
+)
+parser.add_argument(
+    '-p', '--port',
+    metavar='PORT', 
+    type=int, 
+    nargs='?',
+    default=8080,
+    help='TCP Port to bind to. Default: 8080'
+)
+args = parser.parse_args()
 
 """ Views
 """
@@ -610,6 +629,7 @@ class Pyqual:
         raise cherrypy.HTTPRedirect('/pyqual')
 
 
-
+cherrypy.server.socket_port = args.port or 8080
+cherrypy.server.socket_host = args.host or '127.0.0.1'
 cherrypy.quickstart(Pyqual(), '', settings.CP_CONFIG)
 del(auth)
