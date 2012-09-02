@@ -78,7 +78,7 @@ COPY pq_permission (permission_id, name) FROM stdin;
 \.
 
 COPY pq_user (user_id, username, email, password) FROM stdin;
-1	admin	example@email.com	'3c8486002eee6bafbd8967633ccdd05c38eec4823fae0b750f460a54f6c245b5'
+1	admin	example@email.com	3c8486002eee6bafbd8967633ccdd05c38eec4823fae0b750f460a54f6c245b5
 \.
 
 COPY pq_user_permission (user_permission_id, user_id, permission_id) FROM stdin;
