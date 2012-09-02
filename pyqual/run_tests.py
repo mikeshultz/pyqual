@@ -70,6 +70,19 @@ if __name__ == '__main__':
         default=False,
         help='Output debug statements to stdout'
     )
+    parser.add_argument(
+        '-s', '--sql', 
+        action='store_true',
+        default=False,
+        help='Output utility SQL(not test SQL)'
+    )
+    parser.add_argument(
+        '-r', '--dry-run', 
+        action='store_true',
+        default=False,
+        dest='dry',
+        help="Dry Run(Don't actually run tests)"
+    )
     args = parser.parse_args()
 
     db = DB()
@@ -110,6 +123,7 @@ if __name__ == '__main__':
                         ELSE TRUE
                         END
                     ORDER BY db.database_id""")
+    if args.sql: print cur.query
 
     if cur.rowcount == 0:
         if args.debug:
@@ -139,11 +153,13 @@ if __name__ == '__main__':
             errMessage = e.pgerror or e or 'Unknown Error'
             message = 'Test failed due to an SQL or connection error: %s' % errMessage
             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
+            if args.sql: print cur.query
             db.commit()
 
-        if testCur:
+        if testCur and not args.dry:
             # update lastrun
             cur.execute("""UPDATE pq_test SET lastrun = now() WHERE test_id = %s""", (test['test_id'], ))
+            if args.sql: print cur.query
             try:
                 if args.debug:
                     print 'Debug: Running test query'
@@ -153,6 +169,7 @@ if __name__ == '__main__':
                     print 'Debug: Query failed due to an SQL error.'
                 message = 'Test failed due to an SQL error: %s' % e.pgerror
                 cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
+                if args.sql: print cur.query
                 db.commit()
 
             if testCur.rowcount > 0:
@@ -165,16 +182,19 @@ if __name__ == '__main__':
                             if args.debug:
                                 print 'Debug: Test failed! (170)'
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed!');""", (test['test_id'], ) )
+                            if args.sql: print cur.query
                             db.commit()
                         else:
                             if args.debug:
                                 print 'Debug: Test passed'
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test passed!');""", (test['test_id'], ))
+                            if args.sql: print cur.query
                             db.commit()
                     else:
                         if args.debug:
                             print 'Debug: Test failed because the query returned multiple rows'
                         cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed! The query returned more than one row.');""", (test['test_id'], ) )
+                        if args.sql: print cur.query
                         db.commit()
                 elif test['test_type_id'] == 2: # + python
                     if args.debug:
@@ -194,42 +214,51 @@ if __name__ == '__main__':
                         if args.debug:
                             print 'Debug: Python test not run for security reasons'
                         cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test not run for security reasons.');""", (test['test_id'], ) )
+                        if args.sql: print cur.query
                         db.commit()
                     except Exception as e:
                         message = 'Python test failed to run for uknown reason. Check for previous error: %s: %s' % (type(e), e.args)
                         if args.debug:
                             print 'Debug: %s' % message
                         cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
+                        if args.sql: print cur.query
                         db.commit()
                     finally:
                         if t.result == True:
                             if args.debug:
                                 print 'Debug: Test passed'
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test passed!',%s);""", (test['test_id'], pickle.dumps(t.resultData) ) )
+                            if args.sql: print cur.query
                             db.commit()
                         else:
                             if args.debug:
                                 print 'Debug: Test failed! (208)'
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test failed!',%s);""", (test['test_id'], pickle.dumps(t.resultData) ) )
+                            if args.sql: print cur.query
                             db.commit()
                         if t.logs:
                             for l in t.logs:
                                 print 'data! ',
                                 print t.resultData
                                 cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (%s,%s,%s,%s);""", (l[0], test['test_id'], l[1], pickle.dumps(t.resultData)))
+                                if args.sql: print cur.query
                 else:
                     if args.debug:
                         print "Debug: Unknown test type. Don't know what to do"
                     cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test failed because it's an unknown test type.);""", (test['test_id'], ) )
+                    if args.sql: print cur.query
                     db.commit()
             else:
                 if args.debug:
                     print 'Debug: Nothing returned by the query'
                 cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (1,%s,'Test failed! Nothing was returned by the query.');""", (test['test_id'], ) )
+                if args.sql: print cur.query
                 db.commit()
-
+ 
             testDb.disconnect()
         else:
-            if args.debug:
+            if args.debug and not args.dry:
                 print 'Debug: No database cursor to deal with!'
+            elif args.debug and args.dry:
+                print 'Debug: Fake run of test #%s: %s' % (test.get('test_id'), test.get('name'))
     db.disconnect()
