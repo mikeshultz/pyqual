@@ -41,6 +41,12 @@ form label {
     margin-bottom: 10px;
 }
 
+#logs .btn {
+    display: block;
+    float: right;
+    margin-bottom: 10px;
+}
+
 #login-form {}
 #login-form fieldset {
     margin-bottom: 10px;

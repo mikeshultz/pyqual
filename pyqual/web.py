@@ -1,4 +1,4 @@
-import os, math, cherrypy, psycopg2, argparse
+import os, math, datetime, cherrypy, psycopg2, argparse, PyRSS2Gen
 from psycopg2 import extras as pg_extras
 
 from auth import Auth, LoginPage
@@ -604,6 +604,77 @@ class Static(object):
     def GET(self):
         return ''
 
+class RssLogs(object):
+    exposed = True
+    def GET(self, total = 100, page = None):
+
+        db = DB()
+        cur = db.connect(settings.DSN)
+        cur.execute("SELECT count(log_id) FROM pq_log;")
+        row = cur.fetchone()
+        log_count = row[0]
+        pages = math.ceil(log_count / int(total))
+        pages = int(math.ceil(float(log_count) / float(total)))
+        try:
+            offset = (int(page) * int(total)) - int(total)
+        except TypeError:
+            offset = 0
+        cur.execute("""SELECT 
+                            log_id, 
+                            lt.log_type_id,
+                            lt.name AS log_type, 
+                            test_id, 
+                            t.name AS test_name, 
+                            message, 
+                            stamp, 
+                            notify 
+                        FROM 
+                            pq_log l 
+                            JOIN pq_log_type lt USING (log_type_id) 
+                            JOIN pq_test t USING (test_id)
+                        ORDER BY stamp DESC, log_id DESC
+                        LIMIT %s OFFSET %s""", (total, offset, ))
+        
+        results = {
+            'meta': {
+                'totalLogs': log_count,
+                'pages': pages,
+            },
+            'logs': [],
+        }
+
+        items = []
+
+        for log in cur.fetchall():
+            items.append(
+                PyRSS2Gen.RSSItem(
+                    title = '[' + log['log_type'] + '] ' + log['test_name'],
+                    link = 'http://' + args.host + ':' + str(args.port) + '/pyqual#test:' + str(log['test_id']),
+                    description = log['message'],
+                    guid = PyRSS2Gen.Guid(str(log['log_id'])),
+                    pubDate = log['stamp']
+                )
+            )
+
+        rss = PyRSS2Gen.RSS2(
+            title = "Pyqual Logs",
+            link = "http://" + args.host + ':' + str(args.port) + '/',
+            description = "Latest Pyqual logs.",
+            lastBuildDate = datetime.datetime.now(),
+            items = items
+        )   
+
+        db.disconnect()
+
+        cherrypy.response.headers['Content-Type'] = 'application/rss+xml'
+        return rss.to_xml()
+
+class Rss(object):
+    exposed = True
+    logs = RssLogs()
+    def GET(self):
+        return HTTPError(404)
+
 class Index(object):
     exposed = True
     @cherrypy.tools.is_authenticated()
@@ -631,6 +702,7 @@ class Pyqual:
     j.check_user = UserCheck()
     j.log = Log()
     login = LoginPage(auth)
+    rss = Rss()
 
     def GET(self):
         raise cherrypy.HTTPRedirect('/pyqual')

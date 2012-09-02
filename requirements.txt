@@ -1,3 +1,4 @@
 cherrypy>=3.2
 dnspython
 psycopg2
+PyRSS2Gen
