@@ -1,8 +1,12 @@
+#!/usr/bin/python
+import sys, os
+sys.path.append(os.getcwd())
+
 import argparse, re, smtplib, pickle, pprint
 from email.mime.text import MIMEText
 
-import settings
-from utils import DB, DNS
+from pyqual import settings
+from pyqual.utils import DB, DNS
 
 class Email(object):
     """ Base object for e-mail messages """
@@ -30,14 +34,6 @@ class Email(object):
             s = smtplib.SMTP(receivingServer)
             s.sendmail(self.msg['From'], [r, ], self.msg.as_string())
             s.quit()
-
-        """if self.cc:
-            for c in self.cc.split(','):
-                receivingServer = DNS.getPrimaryMXFromEmail(c.strip())
-                receivingServer = str(receivingServer).rstrip('.')
-                s = smtplib.SMTP(receivingServer)
-                s.sendmail(self.msg['From'], [c.strip(), ], self.msg.as_string())
-                s.quit()"""
 
 class LogNotify(Email):
     """ Message template for sending logs out """

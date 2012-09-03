@@ -1,8 +1,12 @@
+#!/usr/bin/python
 """ Here we'll run all the tests """
-import sys, argparse, re, psycopg2, pickle
-import settings
-from utils import DB
-from test_header import test_header
+import sys, os
+sys.path.append(os.getcwd())
+
+import argparse, re, psycopg2, pickle
+from pyqual import settings
+from pyqual.utils import DB
+from pyqual.test_header import test_header
 
 """ Helpers
 """

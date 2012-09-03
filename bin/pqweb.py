@@ -1,11 +1,15 @@
-import os, math, datetime, cherrypy, psycopg2, argparse, PyRSS2Gen
+#!/usr/bin/python
+import sys, os
+sys.path.append(os.getcwd())
+
+import math, datetime, cherrypy, psycopg2, argparse, PyRSS2Gen
 from psycopg2 import extras as pg_extras
 
-from auth import Auth, LoginPage
-from utils import DB, Updated, Inserted
-from templait import Templait
+from pyqual.auth import Auth, LoginPage
+from pyqual.utils import DB, Updated, Inserted
+from pyqual.templait import Templait
 
-import settings
+from pyqual import settings
 
 """ Setup
 """

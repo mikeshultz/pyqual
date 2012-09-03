@@ -5,7 +5,7 @@ VERSION = 'beta-0.1.2'
 # Control database connection settings
 DB_HOST = 'localhost'
 DB_NAME = 'pyqual'
-DB_USER = 'mike'
+DB_USER = 'pyqual'
 DB_PASS = ''
 DB_PORT = 5432
 DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_HOST)
