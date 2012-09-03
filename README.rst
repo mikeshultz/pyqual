@@ -3,8 +3,8 @@
 ================================================================================
 :Info: See <http://wiki.mikeshultz.com/Pyqual> for basic info.
 :Author: Mike Shultz <mike@mikeshultz.com>
-:Date: $Date: 2012-08-26 00:40:00 -0700 (Sat, 26 Aug 2012) $
-:Revision: $Revision: 0.1.0 $
+:Date: $Date: 2012-09-02 18:28:00 -0700 (Sun, 02 Sep 2012) $
+:Revision: $Revision: 1.0 $
 :Description: A python database QA app
 :License: MIT License <http://opensource.org/licenses/MIT>
 :Copyright: Copyright 2012 Mike Shultz
@@ -29,15 +29,28 @@ users for later use.
 
 Setup
 ================================================================================
+
+Using setup.py
+--------------
+1) Run ``sudo python setup.py install``
+2) Get the base data into your database with ``python setup.py basedata --name=[dbname] --user=[username]``
+3) Edit site-packages/pyqual/settings.py to set your database settings
+4) Try out the web interface by running ``pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
+5) Optional: add crontab entry to pull everything together::
+
+    1 0 * * *  /usr/bin/pqrun.py && /usr/bin/pqmessage.py 2>&1
+
+Manual Installation
+-------------------
 To set up pyqual, follow these simple steps:
 
 1) Install dependencies using PIP by running ``pip install -r requirements.txt``
-2) Edit settings.py to set your database settings
+2) Edit pyqual/settings.py to set your database settings
 3) To populate your database with base data and structure, run the SQL in setup/base_data.sql
-4) Try out the web interface by running ``python pyqual/web.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
+4) Try out the web interface by running ``python bin/pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
 5) Optional: add crontab entry to pull everything together::
 
-    1 0 * * *  /path/to/pyqual/run_tests.py && /path/to/pyqual/messages.py 2>&1
+    1 0 * * *  /path/to/pyqual/bin/pqrun.py && /path/to/pyqual/bin/pqmessage.py 2>&1
 
 You should be all set from here!
 
@@ -98,14 +111,14 @@ E-mailed as a pretty printed string.
 
 Running Tests
 ================================================================================
-To run the tests, pyqual/run_tests.py should be run.  For a permanent solution, 
+To run the tests, ``pqrun.py`` should be run.  For a permanent solution, 
 adding it to your crontab would be best, but it can be run manually whenever you 
 need it instead.  All output(unless there's an unexpected error) should be 
 logged into the pq_log table in your database.
 
 E-mail Notifications
 ================================================================================
-To send out E-mail notifications of logs, just run ``pyqual/messages.py``.  This
+To send out E-mail notifications of logs, just run ``pqmessage.py``.  This
 will only send notifications for logs that have not yet had notifications sent.
 
 TODO

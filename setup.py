@@ -26,25 +26,10 @@ try:
             self.password = ''
 
         def finalize_options(self):
-            """Code to validate/modify command-line/config input goes here."""
             pass
 
         def run(self):
-            """Your actual command functionality goes here."""
-            """sql = open('setup/base_data.sql', 'r').read()
-            dsn = "dbname=%s host=%s port=%s user=%s password=%s" % (
-                self.name,
-                self.host,
-                self.port,
-                self.user,
-                self.password,
-            )
-            conn = psycopg2.connect(dsn)
-            cur = conn.cursor()
-            cur.execute(sql)
-            cur.commit()
-            cur.close()
-            conn.close()"""
+            """Run base_data.sql using psql."""
 
             cmd = [
                 "psql", 
