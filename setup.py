@@ -1,3 +1,11 @@
+#!/usr/bin/python
+import sys
+# Check version first
+if sys.version_info[0] != 2:
+    sys.exit('Requires Python 2.7')
+if sys.version_info[1] < 7:
+    sys.exit('Requires Python 2.7')
+
 import subprocess
 from distutils.core import setup
 from distutils.core import Command
