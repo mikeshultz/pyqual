@@ -41,11 +41,12 @@ Setup
 
 Using setup.py
 --------------
-1) Run ``sudo python setup.py install``
-2) Get the base data into your database with ``python setup.py basedata --name=[dbname] --user=[username]``
-3) Edit site-packages/pyqual/settings.py to set your database settings
-4) Try out the web interface by running ``pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
-5) Optional: add crontab entry to pull everything together::
+1) Install requirements ``sudo pip install -r requirements.txt``
+2) Run ``sudo python setup.py install``
+3) Get the base data into your database with ``python setup.py basedata --name=[dbname] --user=[username]``
+4) Edit site-packages/pyqual/settings.py to set your database settings
+5) Try out the web interface by running ``pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
+6) Optional: add crontab entry to pull everything together::
 
     1 0 * * *  /usr/bin/pqrun.py && /usr/bin/pqmessage.py 2>&1
 
