@@ -27,6 +27,15 @@ returned by the test query.  You can also store data from the test for later
 use.  For instance, you could have the test return the result of all Pyqual 
 users for later use.
 
+Requirements
+================================================================================
+Python 2.7
+distutils and setuptools if using setup.py
+
+Python Dependencies
+-------------------
+See requirements.txt
+
 Setup
 ================================================================================
 
