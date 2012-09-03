@@ -1,4 +1,9 @@
-import os, cherrypy
+import os
+try:
+    import cherrypy
+    nocherry = False
+except ImportError:
+    nocherry = True
 
 VERSION = '1.0'
 
@@ -23,12 +28,13 @@ EMAIL_SENDER = 'pyqual@example.com'
 APP_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 # Config for CherryPy
-CP_CONFIG = {
-    '/': {
-        'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-    },
-    '/static': {
-        'tools.staticdir.on': True,
-        'tools.staticdir.dir': os.path.join(APP_ROOT, 'static'),
-    },
-}
+if not nocherry:
+    CP_CONFIG = {
+        '/': {
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+        },
+        '/static': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': os.path.join(APP_ROOT, 'static'),
+        },
+    }
