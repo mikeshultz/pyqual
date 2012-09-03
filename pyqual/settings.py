@@ -1,6 +1,6 @@
 import os, cherrypy
 
-VERSION = 'beta-0.1.2'
+VERSION = '1.0'
 
 # Control database connection settings
 DB_HOST = 'localhost'
@@ -15,7 +15,7 @@ SALT = ''
 
 # Should notification E-mails be sent out?
 EMAIL_NOTIFY = True
-EMAIL_SENDER = 'mike@mikeshultz.com'
+EMAIL_SENDER = 'pyqual@example.com'
 
 ### !!!
 # Do not alter the below settings unless you know what you're doing!
