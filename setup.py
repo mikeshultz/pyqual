@@ -52,7 +52,7 @@ try:
 
     commands['basedata'] = BaseData
 except ImportError:
-    raise UserWarning("Warning! To run basedata command, psycopg2 must be installed!")
+    print "Warning! To run basedata command, psycopg2 must be installed!"
 
 setup(
     name =              'PyQual',
