@@ -7,8 +7,12 @@ if sys.version_info[1] < 7:
     sys.exit('Requires Python 2.7')
 
 import subprocess
-from distutils.core import setup
-from distutils.core import Command
+try:
+    from setuptools import setup
+    from setuptools import Command
+except:
+    from distutils.core import setup
+    from distutils.core import Command
 from pyqual import settings
 
 commands = {}
