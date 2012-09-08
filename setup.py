@@ -67,4 +67,5 @@ setup(
     long_description =  open('README.rst').read(),
     install_requires =  open('requirements.txt').read().split('\n'),
     cmdclass =          commands,
+    include_package_data = True,
 )
