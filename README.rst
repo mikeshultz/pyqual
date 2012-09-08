@@ -50,6 +50,16 @@ Using setup.py
 
     1 0 * * *  /usr/bin/pqrun.py && /usr/bin/pqmessage.py 2>&1
 
+Using pip
+---------
+1) Run ``pip install -e .`` in the pyqual directory
+2) Get the base data into the database with ``psql -f setup/base_data.sql [dbname]``
+3) Edit settings.py to configure your DB connection settings
+4) Try out the web interface by running ``pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
+5) Optional: add crontab entry to pull everything together::
+
+    1 0 * * *  /usr/bin/pqrun.py && /usr/bin/pqmessage.py 2>&1
+
 Manual Installation
 -------------------
 To set up pyqual, follow these simple steps:
