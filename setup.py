@@ -59,7 +59,7 @@ setup(
     version =           settings.VERSION,
     author =            'Mike Shultz',
     author_email =      'mike@mikeshultz.com',
-    packages =          find_packages(),
+    packages =          ['pyqual'],
     scripts =           ['bin/pqrun.py','bin/pqmessage.py','bin/pqweb.py'],
     url =               'http://github.com/mikeshultz/pyqual',
     license =           'LICENSE.txt',
