@@ -65,6 +65,7 @@ class Test:
                                 FROM pq_test t
                                 LEFT JOIN pq_schedule s USING (schedule_id)
                                 LEFT JOIN pq_database d USING (database_id)
+                                WHERE deleted = false
                                 ORDER BY lastrun, test_id;""")
 
             tests = []
@@ -101,7 +102,7 @@ class Test:
                                 FROM pq_test t
                                 LEFT JOIN pq_schedule s USING (schedule_id)
                                 LEFT JOIN pq_database d USING (database_id)
-                                WHERE test_id = %s
+                                WHERE test_id = %s AND deleted = false
                                 ORDER BY lastrun;""", test_id)
 
             if cur.rowcount > 0:
@@ -198,7 +199,7 @@ class Test:
         db = DB()
         cur = db.connect(settings.DSN)
 
-        cur.execute("""DELETE FROM pq_test WHERE test_id = %s""", (test_id, ))
+        cur.execute("""UPDATE pq_test SET deleted = true WHERE test_id = %s""", (test_id, ))
         if cur.rowcount == 1:
             db.commit()
             db.disconnect()
