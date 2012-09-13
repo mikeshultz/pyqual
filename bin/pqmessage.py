@@ -2,11 +2,24 @@
 import sys, os
 sys.path.append(os.getcwd())
 
-import argparse, re, smtplib, pickle, pprint
+import argparse, re, smtplib, pickle, pprint, tempfile
+from email import Encoders
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEBase import MIMEBase
 from email.mime.text import MIMEText
 
 from pyqual import settings
 from pyqual.utils import DB, DNS
+
+def is_list_of_tuples(var):
+    """ Test if a variable is a list of tuples """
+    if type(var) != type([]):
+        return False
+    else:
+        for x in var:
+            if type(x) != type(()):
+                return False
+    return True
 
 class Email(object):
     """ Base object for e-mail messages """
@@ -54,7 +67,8 @@ Result Data
 ===============================================
 %s
 """ % (messageExtra, self._testResultText, self._resultDataText)
-        self.msg = MIMEText(self._messageText)
+        self.msg = MIMEMultipart()
+        self.msg.attach(MIMEText(self._messageText))
     def getMessage(self):
         return self._messageText
     message = property(setMessage, getMessage)
@@ -107,6 +121,7 @@ if __name__ == '__main__':
     currentEmail = ''
     currentCC = ''
     logs = ()
+    csvFiles = []
     pp = pprint.PrettyPrinter(indent=2)
     if cur.rowcount > 0:
         for l in cur.fetchall():
@@ -137,17 +152,37 @@ if __name__ == '__main__':
                 if args.debug:
                     print 'Debug: Found data'
                 data = pickle.loads(l.get('result_data'))
-                strData = pp.pformat(data)
-                if strData:
-                    if args.debug:
-                        print 'Debug: storing data'
-                    resultData.append( (l['test_id'], strData) )
+                for key, val in data.iteritems():
+                    if is_list_of_tuples(val):
+                        strData = '\n'.join([','.join(map(str, x)) for x in val])
+                        if strData:
+                            tf = tempfile.NamedTemporaryFile()
+                            tf.seek(0)
+                            tf.write(strData)
+                            tf.flush()
+                            os.fsync(tf)
+                            csvFiles.append((key, tf))
+                    else:
+                        strData = pp.pformat(val)
+                        if strData:
+                            if args.debug:
+                                print 'Debug: storing data'
+                            resultData.append( (l['test_id'], strData) )
 
         if args.debug:
             print 'Debug: Sending TO: %s CC: %s (150)' % (currentEmail, currentCC)
         msg.test_results = testResults
         msg.result_data = resultData
         msg.setMessage()
+        for f in csvFiles:
+            if args.debug:
+                print 'Debug: Attaching CSV'
+            part = MIMEBase('application', "octet-stream")
+            f[1].seek(0)
+            part.set_payload(f[1].read())
+            Encoders.encode_base64(part)
+            part.add_header('Content-Disposition', 'attachment; filename="%s.csv"' % f[0])
+            msg.msg.attach(part)
         msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
     else:
         if args.debug:
