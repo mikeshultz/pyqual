@@ -130,6 +130,10 @@ Pq.prototype = {
                 html += '<td><a onclick="site.getUserDetail(' + val['user_id'] + '); fakeUrl(\'#user:' + val['user_id'] + '\'); return false;" href="#user:' + val['user_id'] + '">' + val['username'] + '</a></td>';
                 html += '<td>' + val['email'] + '</td>';
                 html += '</tr>';
+
+                // owner dropdown
+                var option = $("<option />").val(this.user_id).text(this.username);
+                $('#test-owner').append(option);
             });
 
             $('table#userlist tbody').html(html);
@@ -254,6 +258,7 @@ Pq.prototype = {
                 //option.attr('selected', 'selected');
                 $('#test-id').val(data['test_id']);
                 $('#test-name').val(data['name']);
+                $('#test-owner').val(data['user_id']);
                 $('#test-lastrun').val(data['lastrun']);
                 $('#test-sql').val(data['sql']);
                 $('#test-python').val(data['python']);
@@ -286,6 +291,7 @@ Pq.prototype = {
             'schedule_id':  testForm.find('#test-schedule').val(),
             'database_id':  testForm.find('#test-database').val(),
             'test_type_id': testForm.find('#test-type').val(),
+            'user_id':      testForm.find('#test-owner').val(),
             'cc':           testForm.find('#test-cc').val(),
             'sql':          testForm.find('#test-sql').val(),
             'python':       testForm.find('#test-python').val()
