@@ -171,8 +171,8 @@ class Test:
             action = Updated()
         else:
             cur.execute(
-                """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, cc, sql, python) VALUES (%s,%s,%s,%s,%s,%s,%s);""",
-                (name, schedule_id, database_id, test_type_id, cc, sql, python)
+                """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);""",
+                (name, schedule_id, database_id, test_type_id, cc, sql, python, auth.user_id)
             )
             action = Inserted()
 
