@@ -96,6 +96,7 @@ class Test:
                                 schedule_id, 
                                 database_id,
                                 test_type_id,
+                                user_id,
                                 cc,
                                 sql,
                                 python
@@ -119,6 +120,7 @@ class Test:
                     'schedule_id':      test['schedule_id'],
                     'database_id':      test['database_id'],
                     'test_type_id':     test['test_type_id'],
+                    'user_id':          test['user_id'],
                     'sql':              test['sql'],
                     'python':           test['python']
                 }
@@ -141,6 +143,7 @@ class Test:
         schedule_id = None, 
         database_id = None, 
         test_type_id = None, 
+        user_id = None,
         sql = None, 
         python = None):
         """ Insert/update a test
@@ -164,9 +167,10 @@ class Test:
                         test_type_id = %s,
                         cc = %s,
                         sql = %s,
-                        python = %s
+                        python = %s,
+                        user_id = %s
                     WHERE test_id = %s;""", 
-                    (name, schedule_id, database_id, test_type_id, cc, sql, python, test_id)
+                    (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id, test_id)
             )
             action = Updated()
         else:
