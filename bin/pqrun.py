@@ -30,11 +30,12 @@ class TestPythonWrapper(object):
         self.removeLines = [
             re.compile('[^\s]*(from\s+)*import\s+'),    # no importing allowed
             re.compile('^[\s]*print[\(\s]+'),           # no stdout
+            re.compile('^[\s]*return\s+'),                    # return
         ]
         self.stopScript = [
             re.compile('\s*exec(file)*[\(\s]+'),    # no use of exec allowed
             re.compile('file\s*\('),                # file()
-            re.compile('open\s*\('),                # file()
+            re.compile('open\s*\('),                # open()
         ]
         listScript = self._codeString.splitlines()
         i = 1
