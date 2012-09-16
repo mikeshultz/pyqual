@@ -1,0 +1,68 @@
+1.0.1
+================================================================================
+64195d2 (tag: 28) Added the ability to change owner of a test for issue #28
+7adb889 Fixed problem with owner not being added to a test on add for issue #28
+077baf0 Added CSV support to pqmessage for issue #26
+ba7bb70 Fixed problem with test deletion by adding deleted attribute to pq_test table for issue #25
+
+1.0
+================================================================================
+ebcd206 (tag: 1.0) Updated README.rst to include pip install usage
+0f7c5fe Added setuptools with distutils fallback so install_requires can be used.
+4f08863 Fixed setup.py and included stati files so they're installed with setup.py.
+00276c6 removed setuptools reference from setup.py
+971d50f Added find_packages() to setup.py
+3fe8e6e Fixed a problem causing static files not to be included in install.
+cf62559 Added requirements.txt step to install
+d0f90c6 Sent to stdout instead of raising an exception so people can still install.
+e976830 Added UserWarning about psycopg2 and basedata distutils command.
+11ad50c Changed settings.py so it could be imported before cherrypy is installed.
+4a6e88d Added Python version check to setup.py.
+ee3a22f Added requirements section to README
+b3968b3 Updating for 1.0 release.
+0e4e4f4 Removed some old debug junk and updated README.rst for setup.py usage.
+d3fd52c Setup distutils packaging for issue #10.  Still needs some testing and maybe submition to PyPi
+12a6669 Added --dry-run and --sql to run_tests.py. Resolves #15
+55f7de1 Forgot to add a link to the rss feed to the button.
+ac28f14 Added log RSS feed. Resolves #14
+6af396c Fixed #19 by modifying jquery.tablesorter.js to keep cssHeader persistent.
+4f27620 Fixed password in base_data.sql to prevent bad COPY. Fixes #23
+f050e1f Added psycopg2 to requirements.txt.  Resolves #21
+271d754 Fixed hover color for special colored rows on log page.  resolve issue #7
+2ad133c Added branding(issue #8), added copyright to web interface, added version, and added a templating system(Temlait).
+8d7e033 Added host and port options to web.py.
+
+0.1.2
+================================================================================
+8934216 (tag: 0.1.2, feature/cc) Added CC to tests.  Fixes issue #20
+e08c76b (feature/pageload) Page now loads to proper page according to anchor URL.  Resolves issue #9
+54b82d0 (feature/tablesort) Added table sorting for tests, databases, and users.  Issue #13
+
+0.1.1
+================================================================================
+fd546e6 (tag: 0.1.1) Fixed pager so it doesn't continue forever.  Resolves issue #5
+7ec0db0 Decided to go with resizing on focus instead of modal load to keep display compact until needed.  issue #16
+2f50f29 Removed unused cli switch from run_tests.
+
+0.1.0
+================================================================================
+ad5c9fe (tag: 0.1.0) Updated readme to fix some errors and clean up formatting.
+d807f61 Updated README with Intro and more info on building tests.
+0f568e2 Added debug output and fixed a couple bugs along the way.
+3779a7d A formatting fix and addition of commits.
+
+0.0.2
+================================================================================
+230418a (tag: 0.0.2) Finished some cleanup.  Resolves issue #2
+c995bc9 Added e-mail notify script and added some other small test stuff.  bug #2
+fce65c0 Fixed a bug that caused a DB lock and writes to pq_user table to hang.
+c198b31 Added resultData to tests and DB(as pickled dict) and fixed a few minor bugs.  resolved #3
+12a24ae Fixed issue #17
+6f58389 Fixed bug with date formatting in test detail API call.
+2b61f51 Added a check to the test query to only pull tests that need to be run from the db.  Still needs further testing.  issue #11
+e506163 made sure lastrun was set and fixed a date+json bug with the web interface. resolves #12
+d9021d9 Fixed help test for python box.  resolves #4
+5cf9093 Fixed table links in log page, added test link, and fixed a couple bugs while in there.  resolves #6
+71169ba Removed some old debug statements.
+3eebc9e Added pager to new logs page.  closes #1
+ac477fe Added LICENSE file
