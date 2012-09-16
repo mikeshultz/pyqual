@@ -37,7 +37,7 @@ class TestPythonWrapper(object):
             re.compile('open\s*\('),                # file()
         ]
         listScript = self._codeString.splitlines()
-        i = 0
+        i = 1
         for line in listScript:
             for r in self.removeLines:
                 if r.search(line):
