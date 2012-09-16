@@ -1,3 +1,9 @@
+1.0.2
+================================================================================
+5a5c9e2 (develop) Added security stripping of return statement for issue #27
+4a5304c Fixed the line numbers in security messages for issue #29
+bd041e9 Added a CHANGELOG.
+
 1.0.1
 ================================================================================
 64195d2 (tag: 28) Added the ability to change owner of a test for issue #28
