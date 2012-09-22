@@ -152,22 +152,23 @@ if __name__ == '__main__':
                 if args.debug:
                     print 'Debug: Found data'
                 data = pickle.loads(l.get('result_data'))
-                for key, val in data.iteritems():
-                    if is_list_of_tuples(val):
-                        strData = '\n'.join([','.join(map(str, x)) for x in val])
-                        if strData:
-                            tf = tempfile.NamedTemporaryFile()
-                            tf.seek(0)
-                            tf.write(strData)
-                            tf.flush()
-                            os.fsync(tf)
-                            csvFiles.append((key, tf))
-                    else:
-                        strData = pp.pformat(val)
-                        if strData:
-                            if args.debug:
-                                print 'Debug: storing data'
-                            resultData.append( (l['test_id'], strData) )
+                if data:
+                    for key, val in data.iteritems():
+                        if is_list_of_tuples(val):
+                            strData = '\n'.join([','.join(map(str, x)) for x in val])
+                            if strData:
+                                tf = tempfile.NamedTemporaryFile()
+                                tf.seek(0)
+                                tf.write(strData)
+                                tf.flush()
+                                os.fsync(tf)
+                                csvFiles.append((key, tf))
+                        else:
+                            strData = pp.pformat(val)
+                            if strData:
+                                if args.debug:
+                                    print 'Debug: storing data'
+                                resultData.append( (l['test_id'], strData) )
 
         if args.debug:
             print 'Debug: Sending TO: %s CC: %s (150)' % (currentEmail, currentCC)
