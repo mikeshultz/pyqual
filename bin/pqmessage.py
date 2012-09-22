@@ -121,7 +121,7 @@ if __name__ == '__main__':
     currentEmail = ''
     currentCC = ''
     logs = ()
-    csvFiles = []
+    #csvFiles = []
     pp = pprint.PrettyPrinter(indent=2)
     if cur.rowcount > 0:
         for l in cur.fetchall():
@@ -133,11 +133,21 @@ if __name__ == '__main__':
                     msg.test_results = testResults
                     msg.result_data = resultData
                     msg.setMessage()
+                    for f in msg.csvFiles:
+                        if args.debug:
+                            print 'Debug: Attaching CSV'
+                        part = MIMEBase('application', "octet-stream")
+                        f[1].seek(0)
+                        part.set_payload(f[1].read())
+                        Encoders.encode_base64(part)
+                        part.add_header('Content-Disposition', 'attachment; filename="%s.csv"' % f[0])
+                        msg.msg.attach(part)
                     msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
                 msg = LogNotify()
                 currentEmail = l['email']
                 currentCC = l['cc']
                 testResults = []
+                msg.csvFiles = []
                 resultData = []
 
             if re.search('passed', l['message'], re.IGNORECASE):
@@ -162,7 +172,7 @@ if __name__ == '__main__':
                                 tf.write(strData)
                                 tf.flush()
                                 os.fsync(tf)
-                                csvFiles.append((key, tf))
+                                msg.csvFiles.append((key, tf))
                         else:
                             strData = pp.pformat(val)
                             if strData:
@@ -175,7 +185,7 @@ if __name__ == '__main__':
         msg.test_results = testResults
         msg.result_data = resultData
         msg.setMessage()
-        for f in csvFiles:
+        for f in msg.csvFiles:
             if args.debug:
                 print 'Debug: Attaching CSV'
             part = MIMEBase('application', "octet-stream")
