@@ -436,7 +436,7 @@ class User:
         if user_id:
             if password:
                 pasSQL = 'password = %s,'
-                vals = (username, password, email, user_id)
+                vals = (username, auth.hash(password), email, user_id)
             else:
                 pasSQL = ''
                 vals = (username, email, user_id)
@@ -453,7 +453,7 @@ class User:
         else:
             cur.execute(
                 """INSERT INTO pq_user (username, password, email) VALUES (%s,%s,%s);""",
-                (username, password, email)
+                (username, auth.hash(password), email)
             )
             action = Inserted()
 
