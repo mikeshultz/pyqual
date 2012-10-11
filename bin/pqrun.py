@@ -127,6 +127,7 @@ if __name__ == '__main__':
                             END
                         ELSE TRUE
                         END
+                        AND deleted = false
                     ORDER BY db.database_id""")
     if args.sql: print cur.query
 
