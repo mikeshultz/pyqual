@@ -59,8 +59,8 @@ class LogNotify(Email):
     def setMessage(self, messageExtra = ''):
         self._messageText = """This is a log test notification from pyqual.  You're receiving this because you are set as the owner of at least one test.
 %s
-Test ID | Test                      | Result
---------+---------------------------+---------
+Test ID | Test                                             | Result
+--------+--------------------------------------------------+---------
 %s                                  
 
 Result Data
@@ -79,10 +79,10 @@ Result Data
 
         self._testResultText = ''
         for r in testResultList:
-            name = r[1][:22] + (r[1][72:] and '...')
+            name = r[1][:45] + (r[1][72:] and '...')
             self._testResultText += '%s | %s | %s\n' % (
                 str(r[0]).ljust(7, ' '),
-                name.ljust(25, ' '),
+                name.ljust(48, ' '),
                 r[2].ljust(8, ' ')
             )
     def getTestResults(self):
