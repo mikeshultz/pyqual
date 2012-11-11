@@ -87,7 +87,16 @@ class Test:
 
             return tests
 
-        def single(self):
+        def single(self, test_id):
+
+            # Is test_id valid?
+            if not test_id:
+                raise cherrypy.HTTPError(404)
+            else:
+                try:
+                    test_id = int(test_id)
+                except:
+                    raise cherrypy.HTTPError(404)
 
             cur.execute("""SELECT
                                 test_id, 
@@ -104,7 +113,7 @@ class Test:
                                 LEFT JOIN pq_schedule s USING (schedule_id)
                                 LEFT JOIN pq_database d USING (database_id)
                                 WHERE test_id = %s AND deleted = false
-                                ORDER BY lastrun;""", test_id)
+                                ORDER BY lastrun;""", (test_id, ))
 
             if cur.rowcount > 0:
                 test = cur.fetchone()
@@ -131,7 +140,7 @@ class Test:
             return t
 
         if test_id:
-            return single(self)
+            return single(self, test_id)
         else:
             return multiple(self)
             
@@ -176,7 +185,7 @@ class Test:
         else:
             cur.execute(
                 """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);""",
-                (name, schedule_id, database_id, test_type_id, cc, sql, python, auth.user_id)
+                (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id or auth.user_id)
             )
             action = Inserted()
 
