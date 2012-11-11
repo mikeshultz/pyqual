@@ -36,6 +36,26 @@ showResult = function(data) {
 
 var pagePattern = /#[A-Za-z0-9\-].*/;
 
+if ($.tablesorter) {
+    $.tablesorter.addParser({ 
+        // set a unique id 
+        id: 'jsonDate', 
+        is: function(s) {
+            //2012-09-13T15:48:32.888468
+            return /\d{1,4}-\d{1,2}-\d{1,2}T*\d{1,2}:\d{1,2}:\d{1,2}\.\d+/.test(s);
+        }, 
+        format: function(s) {
+            s = s.replace(/\-/g," ");
+            s = s.replace(/:/g," ");
+            s = s.replace(/T/," ");
+            s = s.replace(/\./g," ");
+            s = s.split(" ");
+            return $.tablesorter.formatFloat(new Date(s[0], s[1]-1, s[2], s[3], s[4], s[5]).getTime()+parseInt(s[6]));
+        }, 
+        type: 'numeric' 
+    }); 
+}
+
 var Pq = function() {
     this.version = 'a0727';
 };
@@ -81,11 +101,13 @@ Pq.prototype = {
             $('table#testlist tbody').html(html);
 
             $('table#testlist').tablesorter({
-                cssHeader: 'sort',
                 cssAsc: 'sort asc',
                 cssDesc: 'sort desc',
-                onRenderHeader: true,
-                headers: { 0: { sorter: false} }
+                cssHeader: 'sort',
+                headers: { 
+                    0: { sorter: false},
+                    4: { sorter: 'jsonDate'}
+                }
             });
         });
     },
