@@ -22,6 +22,14 @@ SALT = ''
 EMAIL_NOTIFY = True
 EMAIL_SENDER = 'pyqual@example.com'
 
+# Modules that you don't mind being imported by tests
+# Be careful what you allow here, enabling modules like sys or os will 
+# give test writers access to the whole operating system
+IMPORT_WHITELIST = [
+    're',
+    'datetime',
+]
+
 ### !!!
 # Do not alter the below settings unless you know what you're doing!
 ### !!!

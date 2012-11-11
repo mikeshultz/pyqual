@@ -12,6 +12,14 @@ from pyqual.test_header import test_header
 """
 class RunDenied(Exception): pass
 
+def import_whitelist(str):
+    """ If str fits whitelist pattern, return True """
+    pat = re.compile('[^\s]*((from|import)\s+)+(%s)+' % '|'.join(settings.IMPORT_WHITELIST))
+    if pat.search(str):
+        return True
+    else:
+        return False
+
 class TestPythonWrapper(object):
     def __init__(self, test_id, codeString = None):
         self._codeString = ''
@@ -27,11 +35,15 @@ class TestPythonWrapper(object):
         if string:
             self.setCode(string)
 
+        self.importWhitelist = '|'.join(settings.IMPORT_WHITELIST)
+
+        # list of tuples which have (<pattern to remove>, <unless function true>)
         self.removeLines = [
-            re.compile('[^\s]*(from\s+)*import\s+'),    # no importing allowed
-            re.compile('^[\s]*print[\(\s]+'),           # no stdout
-            re.compile('^[\s]*return\s+'),                    # return
+            (re.compile('[^\s]*(from\s+)*import\s+'), import_whitelist),    # no importing allowed
+            (re.compile('^[\s]*print[\(\s]+'), None),                       # no stdout
+            (re.compile('^[\s]*return\s+'), None),                          # return
         ]
+
         self.stopScript = [
             re.compile('\s*exec(file)*[\(\s]+'),    # no use of exec allowed
             re.compile('file\s*\('),                # file()
@@ -41,10 +53,16 @@ class TestPythonWrapper(object):
         i = 1
         for line in listScript:
             for r in self.removeLines:
-                if r.search(line):
-                    self.linesRemoved += 1
-                    del listScript[i]
-                    self.logs.append((2, 'Line %s was deleted from python for test(%s) for security reasons.' % (i, self.test_id)))
+                if r[0].search(line):
+                    if hasattr(r[1], '__call__'):  # is it a function?
+                        if not r[1](line):
+                            self.linesRemoved += 1
+                            del listScript[i]
+                            self.logs.append((2, 'Line %s was deleted from python for test(%s) for security reasons.' % (i, self.test_id)))
+                    else:
+                        self.linesRemoved += 1
+                        del listScript[i]
+                        self.logs.append((2, 'Line %s was deleted from python for test(%s) for security reasons.' % (i, self.test_id)))
             for s in self.stopScript:
                 if s.search(line):
                     raise RunDenied()
