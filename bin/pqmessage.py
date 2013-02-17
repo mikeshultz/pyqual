@@ -45,6 +45,8 @@ class Email(object):
             receivingServer = DNS.getPrimaryMXFromEmail(r)
             receivingServer = str(receivingServer).rstrip('.')
             s = smtplib.SMTP(receivingServer)
+            if getattr(settings, 'EMAIL_SENDING_HOST', None):
+                s.helo(settings.EMAIL_SENDING_HOST)
             s.sendmail(self.msg['From'], [r, ], self.msg.as_string())
             s.quit()
 

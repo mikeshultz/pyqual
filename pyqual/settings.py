@@ -21,6 +21,7 @@ SALT = ''
 # Should notification E-mails be sent out?
 EMAIL_NOTIFY = True
 EMAIL_SENDER = 'pyqual@example.com'
+EMAIL_SENDING_HOST = 'mail.mikeshultz.com'  # Used for HELO command.  If None, will try to get hostname.  Set if you have problems having e-mail rejected.
 
 # Modules that you don't mind being imported by tests
 # Be careful what you allow here, enabling modules like sys or os will 
