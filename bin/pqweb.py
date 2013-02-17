@@ -108,7 +108,8 @@ class Test:
                                 user_id,
                                 cc,
                                 sql,
-                                python
+                                python,
+                                fail_on_no_results
                                 FROM pq_test t
                                 LEFT JOIN pq_schedule s USING (schedule_id)
                                 LEFT JOIN pq_database d USING (database_id)
@@ -131,7 +132,8 @@ class Test:
                     'test_type_id':     test['test_type_id'],
                     'user_id':          test['user_id'],
                     'sql':              test['sql'],
-                    'python':           test['python']
+                    'python':           test['python'],
+                    'fail_on_no_results': test['fail_on_no_results'],
                 }
             else:
                 raise cherrypy.HTTPError(404) 
@@ -154,7 +156,8 @@ class Test:
         test_type_id = None, 
         user_id = None,
         sql = None, 
-        python = None):
+        python = None,
+        fail_on_no_results = False):
         """ Insert/update a test
         """
 
@@ -177,15 +180,16 @@ class Test:
                         cc = %s,
                         sql = %s,
                         python = %s,
-                        user_id = %s
+                        user_id = %s,
+                        fail_on_no_results = %s
                     WHERE test_id = %s;""", 
-                    (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id, test_id)
+                    (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id, fail_on_no_results, test_id)
             )
             action = Updated()
         else:
             cur.execute(
-                """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);""",
-                (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id or auth.user_id)
+                """INSERT INTO pq_test (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id, fail_on_no_results) VALUES (%s,%s,%s,%s,%s,%s,%s,%s, %s);""",
+                (name, schedule_id, database_id, test_type_id, cc, sql, python, user_id or auth.user_id, fail_on_no_results)
             )
             action = Inserted()
 

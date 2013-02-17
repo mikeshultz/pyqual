@@ -288,6 +288,11 @@ Pq.prototype = {
                 $('#test-schedule').val(data['schedule_id']);
                 $('#test-type').val(data['test_type_id']);
                 $('#test-cc').val(data['cc']);
+                if (data['fail_on_no_results'] == true) {
+                    $('#test-no-results').prop('checked', true);
+                } else {
+                    $('#test-no-results').prop('checked', false);
+                }
             });
         } else {
             $('#test-detail-form input, #test-detail-form textarea, #test-detail-form select').val('');
@@ -316,7 +321,10 @@ Pq.prototype = {
             'user_id':      testForm.find('#test-owner').val(),
             'cc':           testForm.find('#test-cc').val(),
             'sql':          testForm.find('#test-sql').val(),
-            'python':       testForm.find('#test-python').val()
+            'python':       testForm.find('#test-python').val(),
+        };
+        if (testForm.find('#test-no-results').is(':checked')) {
+            data['fail_on_no_results'] = testForm.find('#test-no-results').val();
         }
         $.ajax({
             type: 'POST',

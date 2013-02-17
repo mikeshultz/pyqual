@@ -49,7 +49,8 @@ CREATE TABLE pq_test (
     schedule_id int references pq_schedule(schedule_id),
     test_type_id int references pq_test_type(test_type_id),
     database_id int references pq_database(database_id),
-    deleted boolean DEFAULT false
+    deleted boolean DEFAULT false,
+    fail_on_no_results boolean DEFAULT true
 );
 CREATE TABLE pq_log_type (
     log_type_id serial PRIMARY KEY,

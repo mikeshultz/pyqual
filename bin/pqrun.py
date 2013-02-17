@@ -196,7 +196,12 @@ if __name__ == '__main__':
                 if args.sql: print cur.query
                 db.commit()
 
-            if testCur.rowcount > 0:
+            # Whether or not to consider the test a failure due to results
+            doAnyway = False
+            if test['fail_on_no_results'] or testCur.rowcount > 0
+                doAnyway = True
+                
+            if doAnyway:
                 if test['test_type_id'] == 1: # SQL only
                     if args.debug:
                         print 'Debug: Test is SQL only'
