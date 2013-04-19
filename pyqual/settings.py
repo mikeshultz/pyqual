@@ -5,7 +5,7 @@ try:
 except ImportError:
     nocherry = True
 
-VERSION = '1.0'
+VERSION = '1.0.5'
 
 # Control database connection settings
 DB_HOST = 'localhost'
