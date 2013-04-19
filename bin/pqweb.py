@@ -21,7 +21,6 @@ def main():
     """
     auth = Auth(DB)
     cherrypy.tools.is_authenticated = cherrypy.Tool("on_start_resource", auth.is_authenticated)
-    print __name__
     if __name__ == '__main__':
         parser = argparse.ArgumentParser(description='Run the Pyqual Web interface.')
         parser.add_argument(

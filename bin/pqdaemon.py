@@ -6,8 +6,6 @@ import pqweb, pqrun, pqmessage
 
 pid = os.fork()
 children = 0
-print 'pid: %s' % pid
-# TODO: add logging
 
 class PqWebDaemon:
     def __init__(self):
@@ -18,14 +16,7 @@ class PqWebDaemon:
         self.pidfile_path =  '/var/run/pqweb.pid'
         self.pidfile_timeout = 5
     def run(self):
-        pqweb.main()
-
-def run_web():
-    """ Run the pqweb daemon """
-    web = PqWebDaemon()
-    web_daemon_runner = runner.DaemonRunner(web)
-    web_daemon_runner.do_action()
-    #pqweb.main()    
+        pqweb.main() 
 
 class MainDaemon():
     def __init__(self):
