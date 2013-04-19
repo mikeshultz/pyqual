@@ -4,7 +4,7 @@
 :Info: See <http://wiki.mikeshultz.com/Pyqual> for basic info.
 :Author: Mike Shultz <mike@mikeshultz.com>
 :Date: $Date: 2013-04-19 12:33:00 -0700 (Fri, 19 Apr 2013) $
-:Revision: $Revision: 1.0 $
+:Revision: $Revision: 1.0.5 $
 :Description: A python database QA app
 :License: MIT License <http://opensource.org/licenses/MIT>
 :Copyright: Copyright 2012 Mike Shultz
