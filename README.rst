@@ -29,8 +29,8 @@ users for later use.
 
 Requirements
 ================================================================================
-Python 2.7
-distutils and setuptools if using setup.py
+- Python 2.7
+- distutils or setuptools if using setup.py
 
 Python Dependencies
 -------------------
@@ -45,20 +45,16 @@ Using setup.py
 2) Run ``sudo python setup.py install``
 3) Get the base data into your database with ``python setup.py basedata --name=[dbname] --user=[username]``
 4) Edit site-packages/pyqual/settings.py to set your database settings
-5) Try out the web interface by running ``pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
-6) Optional: add crontab entry to pull everything together::
-
-    1 0 * * *  /usr/bin/pqrun.py && /usr/bin/pqmessage.py 2>&1
+5) Run the Pyqual daemon with ``pqdaemon.py start``
+6) Try the web interface, which is default at http://localhost:8081/ and the first user added to the DB has a username of 'admin' and a password of 'pyqual'.
 
 Using pip
 ---------
 1) Run ``pip install -e .`` in the pyqual directory
 2) Get the base data into the database with ``psql -f setup/base_data.sql [dbname]``
 3) Edit settings.py to configure your DB connection settings
-4) Try out the web interface by running ``pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
-5) Optional: add crontab entry to pull everything together::
-
-    1 0 * * *  /usr/bin/pqrun.py && /usr/bin/pqmessage.py 2>&1
+4) Run the Pyqual daemon with ``pqdaemon.py start``
+5) Try the web interface, which is default at http://localhost:8081/ and the first user added to the DB has a username of 'admin' and a password of 'pyqual'.
 
 Manual Installation
 -------------------
@@ -67,10 +63,8 @@ To set up pyqual, follow these simple steps:
 1) Install dependencies using PIP by running ``pip install -r requirements.txt``
 2) Edit pyqual/settings.py to set your database settings
 3) To populate your database with base data and structure, run the SQL in setup/base_data.sql
-4) Try out the web interface by running ``python bin/pqweb.py``.  The first user added to the DB has a username of 'admin' and a password of 'pyqual'.
-5) Optional: add crontab entry to pull everything together::
-
-    1 0 * * *  /path/to/pyqual/bin/pqrun.py && /path/to/pyqual/bin/pqmessage.py 2>&1
+4) Run the Pyqual daemon with ``pqdaemon.py start``
+5) Try the web interface, which is default at http://localhost:8081/ and the first user added to the DB has a username of 'admin' and a password of 'pyqual'.
 
 You should be all set from here!
 
@@ -128,18 +122,6 @@ store it in ``resultData`` in your Python test.::
 
 Then the list will be stored in the log as the actual list of strings and be
 E-mailed as a pretty printed string.
-
-Running Tests
-================================================================================
-To run the tests, ``pqrun.py`` should be run.  For a permanent solution, 
-adding it to your crontab would be best, but it can be run manually whenever you 
-need it instead.  All output(unless there's an unexpected error) should be 
-logged into the pq_log table in your database.
-
-E-mail Notifications
-================================================================================
-To send out E-mail notifications of logs, just run ``pqmessage.py``.  This
-will only send notifications for logs that have not yet had notifications sent.
 
 TODO
 ================================================================================
