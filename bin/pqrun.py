@@ -84,29 +84,37 @@ class TestPythonWrapper(object):
 
 """ Meat
 """
-if __name__ == '__main__':
+def main():
     """ Handle cli arguments """
-    parser = argparse.ArgumentParser(description='Run pyqual tests logging results to the DB.')
-    parser.add_argument(
-        '-d', '--debug', 
-        action='store_true',
-        default=False,
-        help='Output debug statements to stdout'
-    )
-    parser.add_argument(
-        '-s', '--sql', 
-        action='store_true',
-        default=False,
-        help='Output utility SQL(not test SQL)'
-    )
-    parser.add_argument(
-        '-r', '--dry-run', 
-        action='store_true',
-        default=False,
-        dest='dry',
-        help="Dry Run(Don't actually run tests)"
-    )
-    args = parser.parse_args()
+    if __name__ == '__main__':
+        parser = argparse.ArgumentParser(description='Run pyqual tests logging results to the DB.')
+        parser.add_argument(
+            '-d', '--debug', 
+            action='store_true',
+            default=False,
+            help='Output debug statements to stdout'
+        )
+        parser.add_argument(
+            '-s', '--sql', 
+            action='store_true',
+            default=False,
+            help='Output utility SQL(not test SQL)'
+        )
+        parser.add_argument(
+            '-r', '--dry-run', 
+            action='store_true',
+            default=False,
+            dest='dry',
+            help="Dry Run(Don't actually run tests)"
+        )
+        args = parser.parse_args()
+    else:
+        class FakeArgs(object):
+            def __init__(self):
+                self.debug = False
+                self.sql = False
+                self.dry = False
+        args = FakeArgs()
 
     db = DB()
     cur = db.connect(settings.DSN)
@@ -129,7 +137,8 @@ if __name__ == '__main__':
                     db.username AS database_username,
                     db.password AS database_password,
                     db.port AS database_port,
-                    db.hostname AS database_hostname
+                    db.hostname AS database_hostname,
+                    fail_on_no_results
                     FROM
                         pq_test test
                         JOIN pq_database db USING (database_id)
@@ -196,7 +205,12 @@ if __name__ == '__main__':
                 if args.sql: print cur.query
                 db.commit()
 
-            if testCur.rowcount > 0:
+            # Whether or not to consider the test a failure due to results
+            doAnyway = False
+            if test['fail_on_no_results'] or testCur.rowcount > 0:
+                doAnyway = True
+
+            if doAnyway:
                 if test['test_type_id'] == 1: # SQL only
                     if args.debug:
                         print 'Debug: Test is SQL only'
@@ -286,3 +300,6 @@ if __name__ == '__main__':
             elif args.debug and args.dry:
                 print 'Debug: Fake run of test #%s: %s' % (test.get('test_id'), test.get('name'))
     db.disconnect()
+
+if __name__ == '__main__':
+    main()

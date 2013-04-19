@@ -1,3 +1,26 @@
+1.0.5
+================================================================================
+4eb269c Updated README for new usage with pqdaemon.
+2a98ab2 Removed some debug statements not needed anymore.
+1f53530 Lots of updates to add daemon(pqdaemon.py) to pyqual. Issue #30
+e5e7d4d Added a 'Fail on no results' setting to tests for issue #37
+bfa7fb7 Added EMAIL_SENDING_HOST to set outgoing hostname for HELO.
+
+1.0.4
+================================================================================
+6dbc423 (tag: 1.0.4) Fixed a problem with multi-digit test_ids and API backend.
+2ffa01f Added an import whitelist so scripts can import python modules for issue #32
+cc754cf Extended name column in test results email for issue #35
+a433561 Fixed display problem in firefox for issue #34
+4c06ff4 Fixed sorting problem for issue #33 and added proper sorting of tests by date.
+
+1.0.3
+================================================================================
+6cfc9ca (tag: 1.0.3) Make sure pqrun pays attention to the deleted flag.
+d0c5877 Fixed bug #31 where passwords were being set as plaintext in DB.
+337be03 Fixing a problem where attachments weren't attached to the right e-mails.
+b33c2df Added check to make sure data exists before trying to parse it.
+
 1.0.2
 ================================================================================
 5a5c9e2 (develop) Added security stripping of return statement for issue #27

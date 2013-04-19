@@ -31,6 +31,7 @@ form label {
             display: block;
             float: left;
             margin-right: 10px;
+            width: 250px;
         }
 
 #tests .btn-group,
