@@ -104,16 +104,22 @@ Result Data
 
 """ Send out log messages
 """
-if __name__ == '__main__':
+def main():
     """ Handle cli arguments """
-    parser = argparse.ArgumentParser(description='Send pyqual notifications.')
-    parser.add_argument(
-        '-d', '--debug', 
-        action='store_true',
-        default=False,
-        help='Output debug statements to stdout'
-    )
-    args = parser.parse_args()
+    if __name__ == '__main__':
+        parser = argparse.ArgumentParser(description='Send pyqual notifications.')
+        parser.add_argument(
+            '-d', '--debug', 
+            action='store_true',
+            default=False,
+            help='Output debug statements to stdout'
+        )
+        args = parser.parse_args()
+    else:
+        class FakeArgs(object):
+            def __init__(self):
+                self.debug = False
+        args = FakeArgs()
 
     db = DB()
     cur = db.connect(settings.DSN)
@@ -206,3 +212,6 @@ if __name__ == '__main__':
         db.commit()
 
     db.disconnect()
+
+if __name__ == '__main__':
+    main()

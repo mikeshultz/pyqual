@@ -15,13 +15,17 @@ DB_PASS = ''
 DB_PORT = 5432
 DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_HOST)
 
+# Web interface IP and port to bind to
+WEB_HOST = '127.0.0.1'
+WEB_PORT = 8081
+
 # Password salt.  NOTE: If you lose this, all passwords will be lost!
 SALT = ''
 
 # Should notification E-mails be sent out?
 EMAIL_NOTIFY = True
 EMAIL_SENDER = 'pyqual@example.com'
-EMAIL_SENDING_HOST = 'mail.mikeshultz.com'  # Used for HELO command.  If None, will try to get hostname.  Set if you have problems having e-mail rejected.
+EMAIL_SENDING_HOST = 'mail.example.com'  # Used for HELO command.  If None, will try to get hostname.  Set if you have problems having e-mail rejected.
 
 # Modules that you don't mind being imported by tests
 # Be careful what you allow here, enabling modules like sys or os will 

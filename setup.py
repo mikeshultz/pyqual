@@ -64,7 +64,7 @@ setup(
     author =            'Mike Shultz',
     author_email =      'mike@mikeshultz.com',
     packages =          ['pyqual'],
-    scripts =           ['bin/pqrun.py','bin/pqmessage.py','bin/pqweb.py'],
+    scripts =           ['bin/pqrun.py','bin/pqmessage.py','bin/pqweb.py','bin/pqdaemon.py'],
     url =               'http://github.com/mikeshultz/pyqual',
     license =           'LICENSE.txt',
     description =       'A python database QA app.',
