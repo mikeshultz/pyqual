@@ -171,22 +171,26 @@ def main():
                     print 'Debug: Found data'
                 data = pickle.loads(l.get('result_data'))
                 if data:
-                    for key, val in data.iteritems():
-                        if is_list_of_tuples(val):
-                            strData = '\n'.join([','.join(map(str, x)) for x in val])
-                            if strData:
-                                tf = tempfile.NamedTemporaryFile()
-                                tf.seek(0)
-                                tf.write(strData)
-                                tf.flush()
-                                os.fsync(tf)
-                                msg.csvFiles.append((key, tf))
-                        else:
-                            strData = pp.pformat(val)
-                            if strData:
-                                if args.debug:
-                                    print 'Debug: storing data'
-                                resultData.append( (l['test_id'], strData) )
+                    try:
+                        for key, val in data.iteritems():
+                            if is_list_of_tuples(val):
+                                strData = '\n'.join([','.join(map(str, x)) for x in val])
+                                if strData:
+                                    tf = tempfile.NamedTemporaryFile()
+                                    tf.seek(0)
+                                    tf.write(strData)
+                                    tf.flush()
+                                    os.fsync(tf)
+                                    msg.csvFiles.append((key, tf))
+                            else:
+                                strData = pp.pformat(val)
+                                if strData:
+                                    if args.debug:
+                                        print 'Debug: storing data'
+                                    resultData.append( (l['test_id'], strData) )
+                    except: 
+                        if args.debug:
+                            print "Debug: Failure iterating data for test_id = %s" % l['test_id']
 
         if args.debug:
             print 'Debug: Sending TO: %s CC: %s (150)' % (currentEmail, currentCC)
