@@ -9,7 +9,7 @@
 :License: MIT License <http://opensource.org/licenses/MIT>
 :Copyright: Copyright 2012 Mike Shultz
 
-<a href="http://www.quantifiedcode.com/app/project/f9240e0e06db42a09eb4c47f8785d04e"><img src="http://www.quantifiedcode.com/api/v1/project/f9240e0e06db42a09eb4c47f8785d04e/badge.svg" /></a>
++[![Code Issues](http://www.quantifiedcode.com/api/v1/project/f9240e0e06db42a09eb4c47f8785d04e/badge.svg)](http://www.quantifiedcode.com/app/project/f9240e0e06db42a09eb4c47f8785d04e)
 
 Introduction
 ================================================================================
