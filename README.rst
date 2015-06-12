@@ -10,6 +10,8 @@
 :Copyright: Copyright 2012 Mike Shultz
 
 .. image:: http://www.quantifiedcode.com/api/v1/project/f9240e0e06db42a09eb4c47f8785d04e/badge.svg
+   :target: http://www.quantifiedcode.com/app/project/f9240e0e06db42a09eb4c47f8785d04e
+   :alt: QC Code Review
 
 Introduction
 ================================================================================
