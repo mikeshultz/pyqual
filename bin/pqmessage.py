@@ -3,9 +3,9 @@ import sys, os
 sys.path.append(os.getcwd())
 
 import argparse, re, smtplib, pickle, pprint, tempfile
-from email import Encoders
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
+from email import encoders
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 
 from pyqual import settings
@@ -147,7 +147,7 @@ def main():
                         part = MIMEBase('application', "octet-stream")
                         f[1].seek(0)
                         part.set_payload(f[1].read())
-                        Encoders.encode_base64(part)
+                        encoders.encode_base64(part)
                         part.add_header('Content-Disposition', 'attachment; filename="%s.csv"' % f[0])
                         msg.msg.attach(part)
                     msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
@@ -186,7 +186,7 @@ def main():
                                 strData = pp.pformat(val)
                                 if strData:
                                     if args.debug:
-                                        print('Debug: storing data'
+                                        print('Debug: storing data')
                                     resultData.append( (l['test_id'], strData) )
                     except: 
                         if args.debug:
@@ -203,7 +203,7 @@ def main():
             part = MIMEBase('application', "octet-stream")
             f[1].seek(0)
             part.set_payload(f[1].read())
-            Encoders.encode_base64(part)
+            encoders.encode_base64(part)
             part.add_header('Content-Disposition', 'attachment; filename="%s.csv"' % f[0])
             msg.msg.attach(part)
         msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
