@@ -1,5 +1,5 @@
 cherrypy>=3.2
-dnspython
+dnspython3>=1.12.0
 psycopg2
 PyRSS2Gen
 python-daemon>=1.6

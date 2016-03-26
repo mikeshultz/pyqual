@@ -31,7 +31,7 @@ class MainDaemon():
 
     def run(self):
         while True:
-            print "Running pqrun and pqmessage."
+            print("Running pqrun and pqmessage.")
             pqrun.main()
             pqmessage.main()
             time.sleep(60)

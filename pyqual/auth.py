@@ -2,8 +2,8 @@ import cherrypy, hashlib, json, functools
 from datetime import datetime
 from binascii import a2b_qp
 
-import settings
-from templait import Templait
+from . import settings
+from .templait import Templait
 
 class Auth:
     """ Authentication handling """
@@ -48,6 +48,8 @@ class Auth:
                 session = self.cur.fetchone()
                 self.cur.execute("""UPDATE pq_user_session SET session_update = now() WHERE session_id = %s""", (session['session_id'], ))
                 self.db.commit()
+                if self.cur.statusmessage.startswith('ERROR'):
+                    self.db.rollback()
                 self._authenticated = True
                 return True
             else:

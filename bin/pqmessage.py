@@ -137,13 +137,13 @@ def main():
             if l['email'] != currentEmail or l['cc'] != currentCC:
                 if currentEmail != '':
                     if args.debug:
-                        print 'Debug: Sending TO: %s CC: %s (120)' % (currentEmail, currentCC)
+                        print('Debug: Sending TO: %s CC: %s (120)' % (currentEmail, currentCC))
                     msg.test_results = testResults
                     msg.result_data = resultData
                     msg.setMessage()
                     for f in msg.csvFiles:
                         if args.debug:
-                            print 'Debug: Attaching CSV'
+                            print('Debug: Attaching CSV')
                         part = MIMEBase('application', "octet-stream")
                         f[1].seek(0)
                         part.set_payload(f[1].read())
@@ -168,7 +168,7 @@ def main():
 
             if l.get('result_data'):
                 if args.debug:
-                    print 'Debug: Found data'
+                    print('Debug: Found data')
                 data = pickle.loads(l.get('result_data'))
                 if data:
                     try:
@@ -186,20 +186,20 @@ def main():
                                 strData = pp.pformat(val)
                                 if strData:
                                     if args.debug:
-                                        print 'Debug: storing data'
+                                        print('Debug: storing data'
                                     resultData.append( (l['test_id'], strData) )
                     except: 
                         if args.debug:
-                            print "Debug: Failure iterating data for test_id = %s" % l['test_id']
+                            print("Debug: Failure iterating data for test_id = %s" % l['test_id'])
 
         if args.debug:
-            print 'Debug: Sending TO: %s CC: %s (150)' % (currentEmail, currentCC)
+            print('Debug: Sending TO: %s CC: %s (150)' % (currentEmail, currentCC))
         msg.test_results = testResults
         msg.result_data = resultData
         msg.setMessage()
         for f in msg.csvFiles:
             if args.debug:
-                print 'Debug: Attaching CSV'
+                print('Debug: Attaching CSV')
             part = MIMEBase('application', "octet-stream")
             f[1].seek(0)
             part.set_payload(f[1].read())
@@ -209,7 +209,7 @@ def main():
         msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
     else:
         if args.debug:
-            print "Debug: Nothing to send."
+            print("Debug: Nothing to send.")
 
     if len(logs) > 0:
         cur.execute("UPDATE pq_log SET notify = true WHERE log_id IN %s", (logs, ))
