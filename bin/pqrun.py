@@ -78,7 +78,7 @@ class TestPythonWrapper(object):
     code = property(getCode, setCode)
 
     def run(self, variables = { 'result': None, }):
-        exec self.compiledCode in variables
+        exec(self.compiledCode in variables)
         self.result = variables['result']
         self.resultData = variables['resultData']
 
@@ -180,7 +180,7 @@ def main():
             testCur = testDb.connect(testDSN)
             if args.debug:
                 print('Debug: Connection successful')
-        except psycopg2.OperationalError, e:
+        except psycopg2.OperationalError as e:
             if args.debug:
                 print('Debug: Connection failed!')
             errMessage = e.pgerror or e or 'Unknown Error'
@@ -197,7 +197,7 @@ def main():
                 if args.debug:
                     print('Debug: Running test query')
                 testCur.execute(test['sql'])
-            except psycopg2.ProgrammingError, e:
+            except psycopg2.ProgrammingError as e:
                 if args.debug:
                     print('Debug: Query failed due to an SQL error.')
                 message = 'Test failed due to an SQL error: %s' % e.pgerror
@@ -248,29 +248,29 @@ def main():
                         if args.debug:
                             print('Debug: Running python test')
                         t.run({ 'data': data, })
-                    except RunDenied, e:
+                    except RunDenied as e:
                         if args.debug:
-                            print('Debug: Python test not run for security reasons'
+                            print('Debug: Python test not run for security reasons')
                         cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,'Test not run for security reasons.');""", (test['test_id'], ) )
                         if args.sql: print(cur.query)
                         db.commit()
                     except Exception as e:
                         message = 'Python test failed to run for uknown reason. Check for previous error: %s: %s' % (type(e), e.args)
                         if args.debug:
-                            print('Debug: %s' % message
+                            print('Debug: %s' % message)
                         cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (3,%s,%s);""", (test['test_id'], message, ) )
                         if args.sql: print(cur.query)
                         db.commit()
                     finally:
                         if t.result == True:
                             if args.debug:
-                                print('Debug: Test passed'
+                                print('Debug: Test passed')
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test passed!',%s);""", (test['test_id'], pickle.dumps(t.resultData) ) )
                             if args.sql: print(cur.query)
                             db.commit()
                         else:
                             if args.debug:
-                                print('Debug: Test failed! (208)'
+                                print('Debug: Test failed! (208)')
                             cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test failed!',%s);""", (test['test_id'], pickle.dumps(t.resultData) ) )
                             if args.sql: print(cur.query)
                             db.commit()
