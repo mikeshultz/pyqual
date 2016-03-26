@@ -25,7 +25,7 @@ class Email(object):
     """ Base object for e-mail messages """
     def __init__(self, message, subject, sender = None, recipient = None, cc = None):
         self._messageText = message
-        se.f.msg = None
+        self.msg = None
         self.sender = sender
         self.recipient = recipient
         self.subject = subject
@@ -36,7 +36,7 @@ class Email(object):
             self.cc = cc
         if self.cc:
             self.msg['Cc'] = self.cc.replace(',', ';')
-            ccList = self.cc.split(',')
+            ccList = [c.strip() for c in self.cc.split(',')]
         self.msg['Subject'] = subject or self.subject
         self.msg['From'] = sender or self.sender
         self.msg['To'] = recipient or self.recipient
