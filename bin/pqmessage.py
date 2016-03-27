@@ -11,6 +11,12 @@ from email.mime.text import MIMEText
 from pyqual import settings
 from pyqual.utils import DB, DNS
 
+class MailSendException(Exception): 
+    """ This exception should be reaised if for some reason an E-mail 
+        was not able to bet sent.
+    """
+    pass
+
 def is_list_of_tuples(var):
     """ Test if a variable is a list of tuples """
     if type(var) != type([]):
@@ -44,11 +50,14 @@ class Email(object):
         for r in [self.msg['To'], ] + ccList:
             receivingServer = DNS.getPrimaryMXFromEmail(r)
             receivingServer = str(receivingServer).rstrip('.')
-            s = smtplib.SMTP(receivingServer)
-            if getattr(settings, 'EMAIL_SENDING_HOST', None):
-                s.helo(settings.EMAIL_SENDING_HOST)
-            s.sendmail(self.msg['From'], [r, ], self.msg.as_string())
-            s.quit()
+            try:
+                s = smtplib.SMTP(receivingServer)
+                if getattr(settings, 'EMAIL_SENDING_HOST', None):
+                    s.helo(settings.EMAIL_SENDING_HOST)
+                s.sendmail(self.msg['From'], [r, ], self.msg.as_string())
+                s.quit()
+            except smtplib.SMTPConnectError as e:
+                raise MailSendException("SMTP Error %s: %s" % (e.smtp_code, str(e.smtp_error)))
 
 class LogNotify(Email):
     """ Message template for sending logs out """
@@ -129,6 +138,7 @@ def main():
     currentEmail = ''
     currentCC = ''
     logs = ()
+    testResults = []
     #csvFiles = []
     pp = pprint.PrettyPrinter(indent=2)
     if cur.rowcount > 0:
@@ -150,13 +160,23 @@ def main():
                         encoders.encode_base64(part)
                         part.add_header('Content-Disposition', 'attachment; filename="%s.csv"' % f[0])
                         msg.msg.attach(part)
-                    msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
+
+                    # Send message if possible, log if not.
+                    try:
+                        msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
+                    except MailSendException as e:
+                        if args.debug:
+                            print('Debug: E-mail error')
+                        cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (2,%s,%s);""", (l['test_id'], e) )
+                        db.commit()
+
                 msg = LogNotify()
                 currentEmail = l['email']
                 currentCC = l['cc']
                 testResults = []
                 msg.csvFiles = []
                 resultData = []
+                
 
             if re.search('passed', l['message'], re.IGNORECASE):
                 result = 'Success'
@@ -206,7 +226,14 @@ def main():
             encoders.encode_base64(part)
             part.add_header('Content-Disposition', 'attachment; filename="%s.csv"' % f[0])
             msg.msg.attach(part)
-        msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
+
+        try:
+            msg.send(settings.EMAIL_SENDER, currentEmail, 'Pyqual Test Results', cc=currentCC)
+        except MailSendException as e:
+            if args.debug:
+                print('Debug: E-mail error')
+            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (2,%s,%s);""", (l['test_id'], str(e)) )
+            db.commit()
     else:
         if args.debug:
             print("Debug: Nothing to send.")
