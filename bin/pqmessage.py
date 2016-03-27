@@ -49,15 +49,18 @@ class Email(object):
 
         for r in [self.msg['To'], ] + ccList:
             receivingServer = DNS.getPrimaryMXFromEmail(r)
-            receivingServer = str(receivingServer).rstrip('.')
-            try:
-                s = smtplib.SMTP(receivingServer)
-                if getattr(settings, 'EMAIL_SENDING_HOST', None):
-                    s.helo(settings.EMAIL_SENDING_HOST)
-                s.sendmail(self.msg['From'], [r, ], self.msg.as_string())
-                s.quit()
-            except smtplib.SMTPConnectError as e:
-                raise MailSendException("SMTP Error %s: %s" % (e.smtp_code, str(e.smtp_error)))
+            if receivingServer:
+                receivingServer = str(receivingServer).rstrip('.')
+                try:
+                    s = smtplib.SMTP(receivingServer)
+                    if getattr(settings, 'EMAIL_SENDING_HOST', None):
+                        s.helo(settings.EMAIL_SENDING_HOST)
+                    s.sendmail(self.msg['From'], [r, ], self.msg.as_string())
+                    s.quit()
+                except smtplib.SMTPConnectError as e:
+                    raise MailSendException("SMTP Error %s: %s" % (e.smtp_code, str(e.smtp_error)))
+            else:
+                raise MailSendException("We could not find a host to send the message to.")
 
 class LogNotify(Email):
     """ Message template for sending logs out """
@@ -167,7 +170,7 @@ def main():
                     except MailSendException as e:
                         if args.debug:
                             print('Debug: E-mail error')
-                        cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (2,%s,%s);""", (l['test_id'], e) )
+                        cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message) VALUES (2,%s,%s);""", (l['test_id'], str(e)) )
                         db.commit()
 
                 msg = LogNotify()
@@ -189,7 +192,10 @@ def main():
             if l.get('result_data'):
                 if args.debug:
                     print('Debug: Found data')
-                data = pickle.loads(l.get('result_data'))
+                    print(type(l.get('result_data')))
+                raw_data = l.get('result_data').encode(encoding='UTF-8')
+                print(raw_data)
+                data = pickle.loads(raw_data)
                 if data:
                     try:
                         for key, val in data.iteritems():

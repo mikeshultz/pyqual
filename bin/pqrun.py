@@ -265,21 +265,42 @@ def main():
                         if t.result == True:
                             if args.debug:
                                 print('Debug: Test passed')
-                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test passed!',%s);""", (test['test_id'], pickle.dumps(t.resultData) ) )
+                            print('resultData: %s' % t.resultData)
+                            if t.resultData:
+                                data = pickle.dumps(t.resultData.decode(encoding='UTF-8'))
+                            else:
+                                data = None
+
+                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test passed!',%s);""", (test['test_id'], data ) )
                             if args.sql: print(cur.query)
                             db.commit()
+
                         else:
                             if args.debug:
                                 print('Debug: Test failed! (208)')
-                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test failed!',%s);""", (test['test_id'], pickle.dumps(t.resultData) ) )
+                            print('resultData: %s' % t.resultData)
+                            if t.resultData:
+                                data = pickle.dumps(t.resultData.decode(encoding='UTF-8'))
+                            else:
+                                data = None
+
+                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test failed!',%s);""", (test['test_id'], data ) )
                             if args.sql: print(cur.query)
                             db.commit()
+
                         if t.logs:
                             for l in t.logs:
                                 if args.debug:
                                     print(t.resultData)
-                                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (%s,%s,%s,%s);""", (l[0], test['test_id'], l[1], pickle.dumps(t.resultData)))
+                                print('resultData: %s' % t.resultData)
+                                if t.resultData:
+                                    data = pickle.dumps(t.resultData.decode(encoding='UTF-8'))
+                                else:
+                                    data = None
+
+                                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (%s,%s,%s,%s);""", (l[0], test['test_id'], l[1], data))
                                 if args.sql: print(cur.query)
+                                db.commit()
                 else:
                     if args.debug:
                         print("Debug: Unknown test type. Don't know what to do")

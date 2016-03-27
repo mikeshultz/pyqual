@@ -39,11 +39,14 @@ class DNS:
     @staticmethod
     def getPrimaryMX(domain):
         primary = (None, 99999)
-        answers = dns.resolver.query(domain, 'MX')
-        for r in answers:
-            if r.preference < primary[1]:
-                primary = (r.exchange, r.preference)
-        return primary[0]
+        try:
+            answers = dns.resolver.query(domain, 'MX')
+            for r in answers:
+                if r.preference < primary[1]:
+                    primary = (r.exchange, r.preference)
+            return primary[0]
+        except dns.resolver.NoAnswer as e:
+            return None
 
     """ Get the primary MX server for an E-mail address """
     @staticmethod
