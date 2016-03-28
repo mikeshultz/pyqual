@@ -78,7 +78,7 @@ class TestPythonWrapper(object):
     code = property(getCode, setCode)
 
     def run(self, variables = { 'result': None, }):
-        exec(self.compiledCode in variables)
+        exec(self.compiledCode, variables)
         self.result = variables['result']
         self.resultData = variables['resultData']
 
