@@ -28,7 +28,7 @@ def main():
             metavar='ADDR', 
             type=str, 
             nargs='?',
-            default='localhost',
+            default=settings.WEB_HOST,
             help="Hostname or IP address to bind to. '0.0.0.0' and '::' bind to all available IPv4 and IPv6 addresses respectively. Default: localhost"
         )
         parser.add_argument(
@@ -36,7 +36,7 @@ def main():
             metavar='PORT', 
             type=int, 
             nargs='?',
-            default=8080,
+            default=settings.WEB_PORT,
             help='TCP Port to bind to. Default: 8080'
         )
         args = parser.parse_args()
