@@ -3,6 +3,7 @@ import sys, os
 sys.path.append(os.getcwd())
 
 import argparse, re, smtplib, pickle, pprint, tempfile
+from pickle import UnpicklingError
 from email import encoders
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -193,9 +194,16 @@ def main():
                 if args.debug:
                     print('Debug: Found data')
                     print(type(l.get('result_data')))
-                raw_data = l.get('result_data').encode(encoding='UTF-8')
-                print(raw_data)
-                data = pickle.loads(raw_data)
+
+                try:
+                    raw_data = l.get('result_data').encode(encoding='UTF-8')
+                    print(raw_data)
+                    data = pickle.loads(raw_data)
+                except (UnpicklingError, TypeError):
+                    raw_data = l.get('result_data')
+                    print(raw_data)
+                    data = pickle.loads(raw_data)
+
                 if data:
                     try:
                         for key, val in data.iteritems():
