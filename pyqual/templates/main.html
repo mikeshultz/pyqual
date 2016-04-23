@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="/static/b/css/bootstrap.css" />
         <link rel="stylesheet" href="/static/b/css/bootstrap-responsive.min.css" />
         <link rel="stylesheet" href="/static/css/font-awesome.css" />
+        <link rel="stylesheet" href="/static/css/codemirror.css" />
         <link rel="stylesheet" href="/static/css/pyqual.css" />
 
         <!--[if lt IE 9]>
@@ -160,10 +161,10 @@
                     </fieldset>
 
                     <label for="test-sql">SQL</label>
-                    <textarea id="test-sql" class="input-block-level code"></textarea>
+                    <textarea id="test-sql" class="input-block-level code sql"></textarea>
 
                     <label for="test-python">Python</label>
-                    <textarea id="test-python" class="input-block-level code"></textarea>
+                    <textarea id="test-python" class="input-block-level code python"></textarea>
                     <span class="help-block">Data returned by the query will be in the <code>data</code> variable.  For a test to pass, it should set <code>result</code> to <code>True</code>.</span>
 
                     <input type="hidden" id="test-id" />
@@ -268,8 +269,8 @@
         <script src="/static/b/js/bootstrap.min.js"></script>
         <script src="/static/b/js/bootstrap-alert.js"></script>
         <script src="/static/b/js/bootstrap-button.js"></script>
-        <!--<script src="/static/b/js/bootstrap-transition.js"></script>
         <script src="/static/b/js/bootstrap-modal.js"></script>
+        <!--<script src="/static/b/js/bootstrap-transition.js"></script>
         <script src="/static/b/js/bootstrap-dropdown.js"></script>
         <script src="/static/b/js/bootstrap-scrollspy.js"></script>
         <script src="/static/b/js/bootstrap-tab.js"></script>
@@ -279,6 +280,9 @@
         <script src="/static/b/js/bootstrap-carousel.js"></script>
         <script src="/static/b/js/bootstrap-typeahead.js"></script>//-->
         <script src="/static/js/jquery.tablesorter.js"></script>
+        <script src="/static/js/codemirror.js"></script>
+        <script src="/static/js/codemirror/python.js"></script>
+        <script src="/static/js/codemirror/sql.js"></script>
         <script src="/static/js/pyqual.js"></script>
     </body>
 </html>

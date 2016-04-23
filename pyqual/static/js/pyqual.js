@@ -58,6 +58,8 @@ if ($.tablesorter) {
 
 var Pq = function() {
     this.version = 'a0727';
+    this.currentTestPythonElement = null;
+    this.currentTestSqlElement = null
 };
 
 Pq.prototype = {
@@ -273,6 +275,11 @@ Pq.prototype = {
     getTestDetail: function(test_id) {
         var selected = {};
         var test_id = test_id || null;
+
+        // Needed for some config
+        this.loadUsers();
+        this.loadDatabases();
+
         // If there's no test_id, assume we're adding a new one
         if (test_id) {
             $.getJSON('j/test/' + test_id, function(data) {
@@ -285,7 +292,9 @@ Pq.prototype = {
                 $('#test-owner').val(data['user_id']);
                 $('#test-lastrun').val(data['lastrun']);
                 $('#test-sql').val(data['sql']);
+                Pq.currentTestSqlElement = CodeMirror.fromTextArea($('#test-sql')[0], {lineNumbers: true, mode: 'text/x-pgsql' });
                 $('#test-python').val(data['python']);
+                Pq.currentTestPythonElement = CodeMirror.fromTextArea($('#test-python')[0], {lineNumbers: true, mode: 'python' });
                 $('#test-database').val(data['database_id']);
                 $('#test-schedule').val(data['schedule_id']);
                 $('#test-type').val(data['test_type_id']);
@@ -310,11 +319,21 @@ Pq.prototype = {
            'margin-left': function () { 
                return -($(this).width() / 2); 
            }
+        }).on('hidden', function() {
+            // need a better namespace or something
+            console.debug
+            Pq.currentTestPythonElement.toTextArea();
+            Pq.currentTestSqlElement.toTextArea();
         });
         resizeCodeTextarea($('textarea.code'));
     },
     saveTest: function(testForm) {
         url = 'j/test/' + testForm.find('#test-id').val();
+
+        // Copy data from CM back into textarea
+        this.currentTestPythonElement.save();
+        this.currentTestSqlElement.save();
+
         data = {
             'name':         testForm.find('#test-name').val(),
             'schedule_id':  testForm.find('#test-schedule').val(),
