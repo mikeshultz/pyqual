@@ -331,8 +331,8 @@ Pq.prototype = {
         url = 'j/test/' + testForm.find('#test-id').val();
 
         // Copy data from CM back into textarea
-        this.currentTestPythonElement.save();
-        this.currentTestSqlElement.save();
+        Pq.currentTestPythonElement.save();
+        Pq.currentTestSqlElement.save();
 
         data = {
             'name':         testForm.find('#test-name').val(),
