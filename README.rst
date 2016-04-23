@@ -1,13 +1,13 @@
 ================================================================================
  Pyqual - A python database quality assurance app
 ================================================================================
-:Info: See <http://wiki.mikeshultz.com/Pyqual> for basic info.
+:Info: See <http://github.com/mikeshultz/pyqual> for basic info.
 :Author: Mike Shultz <mike@mikeshultz.com>
-:Date: $Date: 2013-04-19 12:33:00 -0700 (Fri, 19 Apr 2013) $
+:Date: $Date: 2016-04-23 14:20:00 -0700 (Sat, 32 Apr 2016) $
 :Revision: $Revision: 1.0.5 $
 :Description: A python database QA app
 :License: MIT License <http://opensource.org/licenses/MIT>
-:Copyright: Copyright 2012 Mike Shultz
+:Copyright: Copyright 2016 Mike Shultz
 
 [![Code Issues](http://www.quantifiedcode.com/api/v1/project/f9240e0e06db42a09eb4c47f8785d04e/badge.svg)](http://www.quantifiedcode.com/app/project/f9240e0e06db42a09eb4c47f8785d04e)
 
@@ -29,11 +29,6 @@ returned by the test query.  You can also store data from the test for later
 use.  For instance, you could have the test return the result of all Pyqual 
 users for later use.
 
-Requirements
-================================================================================
-- Python 2.7
-- distutils or setuptools if using setup.py
-
 Python Dependencies
 -------------------
 See requirements.txt
@@ -41,34 +36,55 @@ See requirements.txt
 Setup
 ================================================================================
 
-Using setup.py
---------------
-1) Install requirements ``sudo pip install -r requirements.txt``
-2) Run ``sudo python setup.py install``
-3) Get the base data into your database with ``python setup.py basedata --name=[dbname] --user=[username]``
-4) Edit site-packages/pyqual/settings.py to set your database settings
-5) Run the Pyqual daemon with ``pqdaemon.py start``
-6) Try the web interface, which is default at http://localhost:8081/ and the first user added to the DB has a username of 'admin' and a password of 'pyqual'.
-
-Using pip
----------
-1) Run ``pip install -e .`` in the pyqual directory
-2) Get the base data into the database with ``psql -f setup/base_data.sql [dbname]``
-3) Edit settings.py to configure your DB connection settings
+1) Run ``sudo python setup.py install``
+2) *Optionally* get the base data into your database with ``python setup.py basedata --name=[dbname] --user=[username]``
+3) Create ``/etc/pyqual/pyqual.ini`` or ``~/.config/pyqual.ini`` with the configuration files outlined in Configuration_
 4) Run the Pyqual daemon with ``pqdaemon.py start``
 5) Try the web interface, which is default at http://localhost:8081/ and the first user added to the DB has a username of 'admin' and a password of 'pyqual'.
 
-Manual Installation
--------------------
-To set up pyqual, follow these simple steps:
+Configuration
+================================================================================
+Pyqual configuration is layed out in an ini format with each parameter inside sections.  All configuration options should be under the correct section.  The following is an example configuration with all available parameters.
 
-1) Install dependencies using PIP by running ``pip install -r requirements.txt``
-2) Edit pyqual/settings.py to set your database settings
-3) To populate your database with base data and structure, run the SQL in setup/base_data.sql
-4) Run the Pyqual daemon with ``pqdaemon.py start``
-5) Try the web interface, which is default at http://localhost:8081/ and the first user added to the DB has a username of 'admin' and a password of 'pyqual'.
+Configuration should be stored in ``/etc/pyqual/pyqual.ini`` and/or ``~/.config/pyqualini``.  The latter takes precidence if it exists.
 
-You should be all set from here!
+::
+
+    [pyqual]
+    ; password salt that should be set to a random string of characters
+    salt = 95f6cdeac6b2121b61b0e5b208fc3466
+
+    [database]
+    ; hostname or IP of the database server
+    host = localhost
+    ; name of the database
+    name = pyqual
+    ; user to connect as
+    user = pyqual
+    ; password
+    pass = 
+    ; the TCP port we are connecting to
+    port = 5432
+
+    [email]
+    ; whether or not to send E-mail notifications[on/off]
+    notifications = on
+    ; the address that will appear as the sender
+    sender = pyqual@example.com
+    ; the server we will be sending through/as
+    smtp_host = 
+
+    [web]
+    ; IP address to bind the Web server too
+    host = 127.0.0.1
+    ; and it's TCP port
+    port = 8081
+
+    [tests]
+    ; python modules that are okay to import in pyqual tests
+    ; !! WARNING: Be cautious about what to allow as some modules such as os and sys
+    ; may give access to the underlying OS
+    import_whitelist = re,datetime
 
 Building Tests
 ================================================================================
@@ -124,10 +140,6 @@ store it in ``resultData`` in your Python test.::
 
 Then the list will be stored in the log as the actual list of strings and be
 E-mailed as a pretty printed string.
-
-TODO
-================================================================================
-n/t
 
 Problems or Questions
 ================================================================================
