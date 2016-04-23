@@ -1,6 +1,6 @@
 /* Pyqual
  *
- * Copyright 2012       '"Mike Shultz" <mike@mikeshultz.com>'
+ * Copyright 2012-2016       '"Mike Shultz" <mike@mikeshultz.com>'
  */
 
 fakeUrl = function (anchor) {
@@ -260,13 +260,15 @@ Pq.prototype = {
             });
         });
     },
-    loadAll: function() {
-        this.loadTests();
-        this.loadDatabases();
-        this.loadUsers();
-        this.loadLogs();
+    loadSemiStatic: function() {
+        // This is the data that is very unlikely to change during a pyqual session
         this.loadSchedules();
         this.loadTestTypes();
+    },
+    loadByURL: function(match) {
+        // Super complicated way of saying site.loadTests()
+        console.debug('running this.' + 'load' + match[1].charAt(0).toUpperCase() + match[1].slice(1) + '()');
+        this['load' + match[1].charAt(0).toUpperCase() + match[1].slice(1)]();
     },
     getTestDetail: function(test_id) {
         var selected = {};
@@ -508,7 +510,7 @@ Pq.prototype = {
 $(document).ready(function() {
     $('#firstload').alert('close');
     site = new Pq();
-    site.loadAll();
+    site.loadSemiStatic();
 
     loc = String(window.location);
     pMatch = loc.match(/\#([A-Za-z0-9\-]+):*([0-9]*)/);
@@ -528,14 +530,20 @@ $(document).ready(function() {
             $('.nav .tab').removeClass('active');
             $('#users-tab').addClass('active');
             site.getUserDetail(pMatch[2]);
-        } else if (pMatch[0]) {
-            $(pMatch[0]).show();
+        } else if (pMatch[1]) {
+            $('#' + pMatch[1]).show();
             $('.nav .tab').removeClass('active');
-            $(pMatch[0] + '-tab').addClass('active');
+            $(pMatch[1] + '-tab').addClass('active');
+
+            site.loadByURL(pMatch)
+
+            $('#' + pMatch[1]).show();
         } else  {
+            site.loadTests();
             $('div#tests').show();
         }
     } else  {
+        site.loadTests();
         $('div#tests').show();
     }
 
@@ -549,6 +557,7 @@ $(document).ready(function() {
         fakeUrl(page);
         $('.nav .tab').removeClass('active');
         pMatch = page.match(/\#([A-Za-z0-9\-].*)/);
+        site.loadByURL(pMatch)
         $(pMatch[0] + '-tab').addClass('active');
     });
     
