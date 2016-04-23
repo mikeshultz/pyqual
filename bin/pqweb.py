@@ -46,7 +46,7 @@ def main():
         host = settings.WEB_HOST
         port = settings.WEB_PORT
         if not host or not port:
-            print "Missing WEB_HOST or WEB_PORT in settings file for daemon mode."
+            print("Missing WEB_HOST or WEB_PORT in settings file for daemon mode.")
             sys.exit()
 
 

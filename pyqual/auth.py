@@ -1,9 +1,9 @@
 import cherrypy, hashlib, json, functools
 from datetime import datetime
-from binascii import a2b_qp
+#from binascii import a2b_qp
 
-import settings
-from templait import Templait
+from . import settings
+from .templait import Templait
 
 class Auth:
     """ Authentication handling """
@@ -26,7 +26,7 @@ class Auth:
     def _startHash(self):
         self.hashObj = hashlib.sha256()
         if settings.SALT:
-            self.hash.update(a2b_qp(settings.SALT))
+            self.hash.update(settings.SALT.encode('UTF-8'))
 
     def _setCookie(self):
         cherrypy.response.cookie['session'] = self.session_id
@@ -48,6 +48,8 @@ class Auth:
                 session = self.cur.fetchone()
                 self.cur.execute("""UPDATE pq_user_session SET session_update = now() WHERE session_id = %s""", (session['session_id'], ))
                 self.db.commit()
+                if self.cur.statusmessage.startswith('ERROR'):
+                    self.db.rollback()
                 self._authenticated = True
                 return True
             else:
@@ -57,11 +59,12 @@ class Auth:
 
     def hash(self, password):
         self.hashObj = hashlib.sha256()
-        self.hashObj.update(a2b_qp(password))
+        self.hashObj.update(password)
         return self.hashObj.hexdigest()
 
     def login(self, username, password):
-        hash = self.hash(password)
+        hash = self.hash(password.encode('UTF-8'))
+        print(type(hash))
         self.cur.execute("""SELECT user_id FROM pq_user WHERE username = %s AND password = %s;""", (username, hash, ))
         if self.cur.rowcount > 0:
             res = self.cur.fetchone()
@@ -100,7 +103,7 @@ class LoginPage:
                 return json.dumps({
                     'result': 'success',
                     'message': 'Logged in successfully!'
-                })
+                }).encode('UTF-8')
             else:
                 raise cherrypy.HTTPRedirect('/')
         else:
@@ -109,6 +112,6 @@ class LoginPage:
                 return json.dumps({
                     'result': 'failure',
                     'message': 'Username or password is incorrect.'
-                })
+                }).encode('UTF-8')
             else:
                 raise cherrypy.HTTPRedirect('/login')

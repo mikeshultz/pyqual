@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import sys
 # Check version first
-if sys.version_info[0] != 2:
-    sys.exit('Requires Python 2.7')
-if sys.version_info[1] < 7:
-    sys.exit('Requires Python 2.7')
+if sys.version_info[0] != 3:
+    sys.exit('Requires Python 3.4')
+if sys.version_info[1] < 4:
+    sys.exit('Requires Python 3.4')
 
 import subprocess
 try:
@@ -13,7 +13,7 @@ try:
 except:
     from distutils.core import setup
     from distutils.core import Command
-from pyqual import settings
+from .pyqual import settings
 
 commands = {}
 
@@ -56,7 +56,15 @@ try:
 
     commands['basedata'] = BaseData
 except ImportError:
-    print "Warning! To run basedata command, psycopg2 must be installed!"
+    print("Warning! To run basedata command, psycopg2 must be installed!")
+
+""" TODO:
+    - create necessay folders and files for the daemon.  For instance
+      the PID location and log files.
+      mkdir /var/run/pyqual
+      touch /var/log/pyqal.log /var/log/pqweb.log
+      touch /var/run/pyqual/pqweb.pid /var/run/pyqual/pyqual.pid
+"""
 
 setup(
     name =              'PyQual',

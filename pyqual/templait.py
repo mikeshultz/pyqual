@@ -40,7 +40,7 @@ class Templait:
         """ Get the template file """
         try:
             self._fh = open(fl or self.file, 'r')
-        except IOError, e:
+        except IOError as e:
             raise TemplateNotFound(e)
         self._templateString = self._fh.read()
         return True
