@@ -280,7 +280,7 @@ def main():
                                 print('Debug: Test failed! (208)')
                             print('resultData: %s' % t.resultData)
                             if t.resultData:
-                                data = pickle.dumps(t.resultData.decode(encoding='UTF-8'))
+                                data = pickle.dumps(t.resultData) #.decode(encoding='UTF-8'))
                             else:
                                 data = None
 
