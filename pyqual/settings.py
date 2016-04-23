@@ -1,3 +1,11 @@
+""" 
+    WARNING
+
+    All user configuration should be defined in the INI files 
+    located at /etc/pyqual/pyqual.ini or ~/.config/pyqual.ini.
+
+    Change any of the following at your own risk!
+"""
 import os, configparser
 try:
     import cherrypy
@@ -14,8 +22,6 @@ config.read([
     os.path.expanduser('~/.config/pyqual.ini')
 ])
 
-print(config)
-
 # Control database connection settings
 DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (
     config['database']['name'],
@@ -24,8 +30,6 @@ DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (
     config['database']['port'],
     config['database']['host']
 )
-
-print(DSN)
 
 # Web interface IP and port to bind to
 WEB_HOST = config['web']['host']
