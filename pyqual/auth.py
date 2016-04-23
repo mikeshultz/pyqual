@@ -26,7 +26,7 @@ class Auth:
     def _startHash(self):
         self.hashObj = hashlib.sha256()
         if settings.SALT:
-            self.hash.update(settings.SALT.encode('UTF-8'))
+            self.hashObj.update(settings.SALT.strip().encode('UTF-8'))
 
     def _setCookie(self):
         cherrypy.response.cookie['session'] = self.session_id
