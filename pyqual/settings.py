@@ -1,4 +1,4 @@
-import os
+import os, configparser
 try:
     import cherrypy
     nocherry = False
@@ -7,33 +7,43 @@ except ImportError:
 
 VERSION = '1.0.5'
 
+config = configparser.ConfigParser()
+config.read([
+    'config/pyqual.ini',
+    '/etc/pyqual/pyqual.ini',
+    os.path.expanduser('~/.config/pyqual.ini')
+])
+
+print(config)
+
 # Control database connection settings
-DB_HOST = 'localhost'
-DB_NAME = 'pyqual'
-DB_USER = 'pyqual'
-DB_PASS = ''
-DB_PORT = 5432
-DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_HOST)
+DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (
+    config['database']['name'],
+    config['database']['user'],
+    config['database']['pass'],
+    config['database']['port'],
+    config['database']['host']
+)
+
+print(DSN)
 
 # Web interface IP and port to bind to
-WEB_HOST = '127.0.0.1'
-WEB_PORT = 8081
+WEB_HOST = config['web']['host']
+WEB_PORT = config['web']['port']
 
 # Password salt.  NOTE: If you lose this, all passwords will be lost!
-SALT = ''
+SALT = config['pyqual']['salt']
 
 # Should notification E-mails be sent out?
-EMAIL_NOTIFY = True
-EMAIL_SENDER = 'pyqual@example.com'
-EMAIL_SENDING_HOST = 'mail.example.com'  # Used for HELO command.  If None, will try to get hostname.  Set if you have problems having e-mail rejected.
+EMAIL_NOTIFY = config['email']['notifications']
+EMAIL_SENDER = config['email']['sender']
+EMAIL_SENDING_HOST = config['email']['smtp_host']
 
 # Modules that you don't mind being imported by tests
 # Be careful what you allow here, enabling modules like sys or os will 
 # give test writers access to the whole operating system
-IMPORT_WHITELIST = [
-    're',
-    'datetime',
-]
+IMPORT_WHITELIST = config['tests']['import_whitelist'].split(',')
+
 
 ### !!!
 # Do not alter the below settings unless you know what you're doing!

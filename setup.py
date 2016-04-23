@@ -13,7 +13,7 @@ try:
 except:
     from distutils.core import setup
     from distutils.core import Command
-from .pyqual import settings
+from pyqual import settings
 
 commands = {}
 
@@ -67,7 +67,7 @@ except ImportError:
 """
 
 setup(
-    name =              'PyQual',
+    name =              'pyqual',
     version =           settings.VERSION,
     author =            'Mike Shultz',
     author_email =      'mike@mikeshultz.com',
@@ -107,5 +107,8 @@ setup(
             'static/ts/jquery.tablesorter.min.js',
             'static/ts/jquery.metadata.js',
         ],
+        'config':       [
+            'pyqual.ini',
+        ]
     },
 )
