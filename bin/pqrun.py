@@ -267,11 +267,11 @@ def main():
                                 print('Debug: Test passed')
                             print('resultData: %s' % t.resultData)
                             if t.resultData:
-                                data = pickle.dumps(t.resultData.decode(encoding='UTF-8'))
+                                data = pickle.dumps(t.resultData) #.decode('UTF-8', 'ignore')
                             else:
                                 data = None
 
-                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test passed!',%s);""", (test['test_id'], data ) )
+                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test passed!',%s::bytea);""", (test['test_id'], psycopg2.Binary(data) ) )
                             if args.sql: print(cur.query)
                             db.commit()
 
@@ -280,11 +280,11 @@ def main():
                                 print('Debug: Test failed! (208)')
                             print('resultData: %s' % t.resultData)
                             if t.resultData:
-                                data = pickle.dumps(t.resultData) #.decode(encoding='UTF-8'))
+                                data = pickle.dumps(t.resultData) #.decode('UTF-8', 'ignore')
                             else:
                                 data = None
 
-                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test failed!',%s);""", (test['test_id'], data ) )
+                            cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (1,%s,'Test failed!',%s::bytea);""", (test['test_id'], psycopg2.Binary(data) ) )
                             if args.sql: print(cur.query)
                             db.commit()
 
@@ -294,11 +294,11 @@ def main():
                                     print(t.resultData)
                                 print('resultData: %s' % t.resultData)
                                 if t.resultData:
-                                    data = pickle.dumps(t.resultData.decode(encoding='UTF-8'))
+                                    data = pickle.dumps(t.resultData)#.decode('UTF-8', 'ignore')
                                 else:
                                     data = None
 
-                                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (%s,%s,%s,%s);""", (l[0], test['test_id'], l[1], data))
+                                cur.execute("""INSERT INTO pq_log (log_type_id, test_id, message, result_data) VALUES (%s,%s,%s,%s::bytea);""", (l[0], test['test_id'], l[1], psycopg2.Binary(data)))
                                 if args.sql: print(cur.query)
                                 db.commit()
                 else:

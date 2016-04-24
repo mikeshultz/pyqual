@@ -1,11 +1,21 @@
 """ Various items we'll need later """
-import re, psycopg2, dns.resolver
+import re, psycopg2, dns.resolver, pickle
 from psycopg2 import extras as pg_extras
 
 dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
 
 class Updated(object): pass
 class Inserted(object): pass
+
+def _cast_pickle(data, cur):
+    if data is None: return None
+    return pickle.loads(str(psycopg2.BINARY(data, cur)))
+
+psycopg2.extensions.register_type(
+    psycopg2.extensions.new_type(
+        psycopg2.BINARY.values, 'BINARY-PICKLE', _cast_pickle
+    )
+)
 
 class DB:
     """ Simple DB wrapper
@@ -14,6 +24,7 @@ class DB:
         self.dsn = ''
         self.connection = None
         self.cursor = None
+
         if dsn:
             self.connect(dsn)
 

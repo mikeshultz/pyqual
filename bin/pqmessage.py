@@ -1,8 +1,11 @@
 #!/usr/bin/python
+""" Script for processing messages and notifications for tests already run.
+"""
+
 import sys, os
 sys.path.append(os.getcwd())
 
-import argparse, re, smtplib, pickle, pprint, tempfile
+import argparse, re, smtplib, pickle, pprint, tempfile, psycopg2
 from pickle import UnpicklingError
 from email import encoders
 from email.mime.multipart import MIMEMultipart
@@ -11,6 +14,8 @@ from email.mime.text import MIMEText
 
 from pyqual import settings
 from pyqual.utils import DB, DNS
+
+
 
 class MailSendException(Exception): 
     """ This exception should be reaised if for some reason an E-mail 
@@ -196,9 +201,10 @@ def main():
                     print(type(l.get('result_data')))
 
                 try:
-                    raw_data = l.get('result_data').encode(encoding='UTF-8')
+                    raw_data = l.get('result_data') #, '').encode('UTF-8', 'ignore')
                     print(raw_data)
-                    data = pickle.loads(raw_data)
+                    #data = pickle.loads(raw_data)
+                    data = pickle.loads(psycopg2.BINARY(raw_data, cur))
                 except (UnpicklingError, TypeError):
                     raw_data = l.get('result_data')
                     print(raw_data)
