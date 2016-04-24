@@ -1,4 +1,7 @@
 #!/usr/bin/python
+""" Web interface for pyqual.
+"""
+
 import sys, os
 sys.path.append(os.getcwd())
 
@@ -10,6 +13,15 @@ from pyqual.utils import DB, Updated, Inserted
 from pyqual.templait import Templait
 
 from pyqual import settings
+
+__author__ = "Mike Shultz"
+__copyright__ = "Copyright 2016, Mike Shultz"
+__credits__ = ["Mike Shultz"]
+__license__ = "MIT"
+__version__ = "2.0.0"
+__maintainer__ = "Mike Shultz"
+__email__ = "mike@mikeshultz.com"
+__status__ = "Production"
 
 def main():
 

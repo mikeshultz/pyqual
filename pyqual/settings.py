@@ -13,7 +13,16 @@ try:
 except ImportError:
     nocherry = True
 
-VERSION = '1.0.5'
+__author__ = "Mike Shultz"
+__copyright__ = "Copyright 2016, Mike Shultz"
+__credits__ = ["Mike Shultz"]
+__license__ = "MIT"
+__version__ = "2.0.0"
+__maintainer__ = "Mike Shultz"
+__email__ = "mike@mikeshultz.com"
+__status__ = "Production"
+
+VERSION = __version__
 
 config = configparser.ConfigParser()
 config.read([

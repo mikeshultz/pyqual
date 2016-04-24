@@ -1,4 +1,6 @@
 #!/usr/bin/python
+""" Installer for pyqual """
+
 import sys
 # Check version first
 if sys.version_info[0] != 3:

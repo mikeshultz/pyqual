@@ -4,7 +4,7 @@
 :Info: See <http://github.com/mikeshultz/pyqual> for basic info.
 :Author: Mike Shultz <mike@mikeshultz.com>
 :Date: $Date: 2016-04-23 14:20:00 -0700 (Sat, 32 Apr 2016) $
-:Revision: $Revision: 1.0.5 $
+:Revision: $Revision: 2.0.0 $
 :Description: A python database QA app
 :License: MIT License <http://opensource.org/licenses/MIT>
 :Copyright: Copyright 2016 Mike Shultz

@@ -1,9 +1,20 @@
+""" Handle all the necessary authentication for pyqual. """
+
 import cherrypy, hashlib, json, functools
 from datetime import datetime
 #from binascii import a2b_qp
 
 from . import settings
 from .templait import Templait
+
+__author__ = "Mike Shultz"
+__copyright__ = "Copyright 2016, Mike Shultz"
+__credits__ = ["Mike Shultz"]
+__license__ = "MIT"
+__version__ = "2.0.0"
+__maintainer__ = "Mike Shultz"
+__email__ = "mike@mikeshultz.com"
+__status__ = "Production"
 
 class Auth:
     """ Authentication handling """

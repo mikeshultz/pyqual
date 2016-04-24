@@ -1,4 +1,15 @@
+""" An ultra simple templating system """
+
 import re
+
+__author__ = "Mike Shultz"
+__copyright__ = "Copyright 2016, Mike Shultz"
+__credits__ = ["Mike Shultz"]
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Mike Shultz"
+__email__ = "mike@mikeshultz.com"
+__status__ = "Production"
 
 class TemplateError(Exception): pass
 class TemplateEmpty(TemplateError): pass

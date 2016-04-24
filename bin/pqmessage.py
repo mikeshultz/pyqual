@@ -15,7 +15,14 @@ from email.mime.text import MIMEText
 from pyqual import settings
 from pyqual.utils import DB, DNS
 
-
+__author__ = "Mike Shultz"
+__copyright__ = "Copyright 2016, Mike Shultz"
+__credits__ = ["Mike Shultz"]
+__license__ = "MIT"
+__version__ = "2.0.0"
+__maintainer__ = "Mike Shultz"
+__email__ = "mike@mikeshultz.com"
+__status__ = "Production"
 
 class MailSendException(Exception): 
     """ This exception should be reaised if for some reason an E-mail 

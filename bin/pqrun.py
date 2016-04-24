@@ -1,5 +1,6 @@
 #!/usr/bin/python
-""" Here we'll run all the tests """
+""" Pyqual test runner """
+
 import sys, os
 sys.path.append(os.getcwd())
 
@@ -7,6 +8,15 @@ import argparse, re, psycopg2, pickle
 from pyqual import settings
 from pyqual.utils import DB
 from pyqual.test_header import test_header
+
+__author__ = "Mike Shultz"
+__copyright__ = "Copyright 2016, Mike Shultz"
+__credits__ = ["Mike Shultz"]
+__license__ = "MIT"
+__version__ = "2.0.0"
+__maintainer__ = "Mike Shultz"
+__email__ = "mike@mikeshultz.com"
+__status__ = "Production"
 
 """ Helpers
 """

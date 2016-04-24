@@ -1,8 +1,19 @@
 #!/usr/bin/python
+""" Daemon to run all parts of pyqual.  """
+
 import time, os
 from daemonize import Daemonize
 
 import pqweb, pqrun, pqmessage
+
+__author__ = "Mike Shultz"
+__copyright__ = "Copyright 2016, Mike Shultz"
+__credits__ = ["Mike Shultz"]
+__license__ = "MIT"
+__version__ = "2.0.0"
+__maintainer__ = "Mike Shultz"
+__email__ = "mike@mikeshultz.com"
+__status__ = "Production"
 
 pid = os.fork()
 children = 0
