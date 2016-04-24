@@ -312,20 +312,21 @@ Pq.prototype = {
         $('#test-detail').modal({
             backdrop: true,
             keyboard: true
-        }).css({
-           'width': function () { 
-               return ($(document).width() * .9) + 'px';  
-           },
-           'margin-left': function () { 
-               return -($(this).width() / 2); 
-           }
         }).on('hidden', function() {
             // need a better namespace or something
             console.debug
             Pq.currentTestPythonElement.toTextArea();
             Pq.currentTestSqlElement.toTextArea();
         });
-        resizeCodeTextarea($('textarea.code'));
+        /*.css({
+           'width': function () { 
+               return ($(document).width() * .9) + 'px';  
+           },
+           'margin-left': function () { 
+               return -($(this).width() / 2); 
+           }
+        })*/
+        //resizeCodeTextarea($('textarea.code'));
     },
     saveTest: function(testForm) {
         url = 'j/test/' + testForm.find('#test-id').val();
@@ -535,49 +536,51 @@ $(document).ready(function() {
     pMatch = loc.match(/\#([A-Za-z0-9\-]+):*([0-9]*)/);
     if (pMatch) {
         if (pMatch[1] == 'test-detail') {
-            $('#tests').show();
+            /*$('#tests').show();
             $('.nav .tab').removeClass('active');
-            $('#tests-tab').addClass('active');
+            $('#tests-tab').addClass('active');*/
             site.getTestDetail(pMatch[2]);
         } else if (pMatch[1] == 'database') {
-            $('#databases').show();
+            /*$('#databases').show();
             $('.nav .tab').removeClass('active');
-            $('#databasess-tab').addClass('active');
+            $('#databasess-tab').addClass('active');*/
             site.getDatabaseDetail(pMatch[2]);
         } else if (pMatch[1] == 'user') {
-            $('#users').show();
+            /*$('#users').show();
             $('.nav .tab').removeClass('active');
-            $('#users-tab').addClass('active');
+            $('#users-tab').addClass('active');*/
             site.getUserDetail(pMatch[2]);
         } else if (pMatch[1]) {
-            $('#' + pMatch[1]).show();
+            /*$('#' + pMatch[1]).show();
             $('.nav .tab').removeClass('active');
-            $(pMatch[1] + '-tab').addClass('active');
+            $(pMatch[1] + '-tab').addClass('active');*/
 
             site.loadByURL(pMatch)
 
-            $('#' + pMatch[1]).show();
+            //$('#' + pMatch[1]).show();
         } else  {
             site.loadTests();
-            $('div#tests').show();
+            //$('div#tests').show();
         }
     } else  {
         site.loadTests();
-        $('div#tests').show();
+        //$('div#tests').show();
     }
 
     /***
      * Navigation 
      ***/
-    $('.nav li a').click(function() {
+    $('.nav li a').click(function(e) {
+        e.preventDefault();
         var page = $(this).attr('href');
-        $('.page').hide();
-        $(page).show();
+        //$('.page').hide();
+        //$(page).show();
+        $(this).tab('show');
         fakeUrl(page);
-        $('.nav .tab').removeClass('active');
+        //$('.nav .tab').removeClass('active');
         pMatch = page.match(/\#([A-Za-z0-9\-].*)/);
         site.loadByURL(pMatch)
-        $(pMatch[0] + '-tab').addClass('active');
+        //$(pMatch[0] + '-tab').addClass('active');
     });
     
     /***
