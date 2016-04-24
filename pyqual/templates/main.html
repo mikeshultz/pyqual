@@ -165,7 +165,14 @@
 
                     <label for="test-python">Python</label>
                     <textarea id="test-python" class="input-block-level code python"></textarea>
-                    <span class="help-block">Data returned by the query will be in the <code>data</code> variable.  For a test to pass, it should set <code>result</code> to <code>True</code>.</span>
+                    <div class="help-block">
+                        <h4>Useful Variables</h4>
+                        <ul>
+                            <li><code>data</code> - Data returned by the query</li>
+                            <li><code>result</code> - Status of the test.  True(pass)/False(fail).</li>
+                            <li><code>resultData</code> - Tabular data stored as a list of tuples in for storage and inclusion in the notification.</li>
+                        </ul>
+                    </div>
 
                     <input type="hidden" id="test-id" />
                 </form>
