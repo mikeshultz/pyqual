@@ -42,7 +42,7 @@ DSN = "dbname=%s user=%s password=%s port=%s host=%s" % (
 
 # Web interface IP and port to bind to
 WEB_HOST = config['web']['host']
-WEB_PORT = config['web']['port']
+WEB_PORT = int(config['web']['port'])
 
 # Password salt.  NOTE: If you lose this, all passwords will be lost!
 SALT = config['pyqual']['salt']

@@ -48,7 +48,7 @@ def main():
             metavar='PORT', 
             type=int, 
             nargs='?',
-            default=settings.WEB_PORT,
+            default=int(settings.WEB_PORT),
             help='TCP Port to bind to. Default: 8080'
         )
         args = parser.parse_args()
