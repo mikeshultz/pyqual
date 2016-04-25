@@ -5,7 +5,6 @@
         <title>Pyqual</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/static/b/css/bootstrap.css" />
-        <link rel="stylesheet" href="/static/b/css/bootstrap-responsive.min.css" />
         <link rel="stylesheet" href="/static/css/font-awesome.css" />
         <link rel="stylesheet" href="/static/css/codemirror.css" />
         <link rel="stylesheet" href="/static/css/pyqual.css" />
@@ -16,276 +15,316 @@
     </head>
     <body>
         <div id="brand"><a href="/pyqual">pyqual</a></div>
-        <div>
-            <ul class="nav nav-tabs">
-                <li id="tests-tab" class="tab active"><a href="#tests">Tests</a></li>
-                <li id="users-tab" class="tab"><a href="#users">Users</a></li>
-                <li id="databases-tab" class="tab"><a href="#databases">Databases</a></li>
-                <li id="logs-tab" class="tab"><a href="#logs">Logs</a></li>
+        <nav>
+            <ul class="nav nav-tabs" role="tablist">
+                <li id="tests-tab" class="tab active" role="presentation"><a role="tab" data-toggle="tab" href="#tests">Tests</a></li>
+                <li id="users-tab" class="tab"><a role="tab" data-toggle="tab" href="#users">Users</a></li>
+                <li id="databases-tab" class="tab"><a role="tab" data-toggle="tab" href="#databases">Databases</a></li>
+                <li id="logs-tab" class="tab"><a role="tab" data-toggle="tab" href="#logs">Logs</a></li>
             </ul>
-        </div>
+        </nav>
         <div class="container">
-            <div id="firstload" class="alert">
+            <div id="firstload" class="alert alert-warning">
                 <button class="close" data-dismiss="alert">x</button>
                 <h4 class="alert-heading">Attention!</h4>
                 You must enable javascript for this app to work.
             </div>
-            <div id="alert" class="hide alert">
+            <div id="alert" class="hide alert alert-warning">
                 <button class="close" data-dismiss="alert">x</button>
                 <h4 class="alert-heading">Attention!</h4>
                 <span class="alert-body">Woah, buddy!</span>
             </div>
-            <div id="tests" class="hide page clearfix">
-                <div class="btn-group">
-                    <button class="btn btn-warning btn-delete-test">Delete</button>
-                    <button class="btn btn-primary btn-add-test">Add</button>
+
+            <div class="tab-content">
+                <div id="tests" role="tabpanel" class="tab-pane fade in active">
+                    <div class="btn-group">
+                        <button class="btn btn-warning btn-delete-test">Delete</button>
+                        <button class="btn btn-primary btn-add-test">Add</button>
+                    </div>
+                    <table id="testlist" class="table table-striped table-bordered">
+                        <thead>
+                            <th><input type="checkbox" class="check-all" /></th>
+                            <th class="sort">ID</th>
+                            <th class="sort">Name</th>
+                            <th class="sort">Schedule</th>
+                            <th class="sort desc">Last Run</th>
+                            <th class="sort">Database</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="btn-group">
+                        <button class="btn btn-warning" class="btn-delete-test">Delete</button>
+                        <button class="btn btn-primary" class="btn-add-test">Add</button>
+                    </div>
                 </div>
-                <table id="testlist" class="table table-striped table-bordered">
-                    <thead>
-                        <th><input type="checkbox" class="check-all" /></th>
-                        <th class="sort">ID</th>
-                        <th class="sort">Name</th>
-                        <th class="sort">Schedule</th>
-                        <th class="sort desc">Last Run</th>
-                        <th class="sort">Database</th>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="btn-group">
-                    <button class="btn btn-warning" class="btn-delete-test">Delete</button>
-                    <button class="btn btn-primary" class="btn-add-test">Add</button>
+                <div id="databases" role="tabpanel" class="tab-pane fade">
+                    <div class="btn-group">
+                        <button class="btn btn-warning btn-delete-database">Delete</button>
+                        <button class="btn btn-primary btn-add-database">Add</button>
+                    </div>
+                    <table id="databaselist" class="table table-striped table-bordered">
+                        <thead>
+                            <th><input type="checkbox" class="check-all" /></th>
+                            <th class="sort">ID</th>
+                            <th class="sort asc">Name</th>
+                            <th class="sort">Username</th>
+                            <th class="sort">Host</th>
+                            <th class="sort">Active</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="btn-group">
+                        <button class="btn btn-warning btn-delete-database">Delete</button>
+                        <button class="btn btn-primary btn-add-database">Add</button>
+                    </div>
                 </div>
-            </div>
-            <div id="databases" class="hide page clearfix">
-                <div class="btn-group">
-                    <button class="btn btn-warning btn-delete-database">Delete</button>
-                    <button class="btn btn-primary btn-add-database">Add</button>
+                <div id="users" role="tabpanel" class="tab-pane fade">
+                    <div class="btn-group">
+                        <button class="btn btn-warning btn-delete-user">Delete</button>
+                        <button class="btn btn-primary btn-add-user">Add</button>
+                    </div>
+                    <table id="userlist" class="table table-striped table-bordered">
+                        <thead>
+                            <th><input type="checkbox" class="check-all" /></th>
+                            <th>ID</th>
+                            <th class="sort asc">Username</th>
+                            <th class="sort">E-mail</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="btn-group">
+                        <button class="btn btn-warning btn-delete-user">Delete</button>
+                        <button class="btn btn-primary btn-add-user">Add</button>
+                    </div>
                 </div>
-                <table id="databaselist" class="table table-striped table-bordered">
-                    <thead>
-                        <th><input type="checkbox" class="check-all" /></th>
-                        <th class="sort">ID</th>
-                        <th class="sort asc">Name</th>
-                        <th class="sort">Username</th>
-                        <th class="sort">Host</th>
-                        <th class="sort">Active</th>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="btn-group">
-                    <button class="btn btn-warning btn-delete-database">Delete</button>
-                    <button class="btn btn-primary btn-add-database">Add</button>
+                <div id="logs" role="tabpanel" class="tab-pane fade">
+                    <a href="/rss/logs"><button class="btn btn-info">
+                        <i class="icon-rss"></i>
+                        RSS
+                    </button></a>
+                    <table id="loglist" class="table table-striped table-bordered">
+                        <thead>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Test</th>
+                            <th>Message</th>
+                            <th class="sort desc">When</th>
+                            <th>Notified</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination pagination-right"></div>
                 </div>
-            </div>
-            <div id="users" class="hide page clearfix">
-                <div class="btn-group">
-                    <button class="btn btn-warning btn-delete-user">Delete</button>
-                    <button class="btn btn-primary btn-add-user">Add</button>
-                </div>
-                <table id="userlist" class="table table-striped table-bordered">
-                    <thead>
-                        <th><input type="checkbox" class="check-all" /></th>
-                        <th>ID</th>
-                        <th class="sort asc">Username</th>
-                        <th class="sort">E-mail</th>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="btn-group">
-                    <button class="btn btn-warning btn-delete-user">Delete</button>
-                    <button class="btn btn-primary btn-add-user">Add</button>
-                </div>
-            </div>
-            <div id="logs" class="hide page clearfix">
-                <a href="/rss/logs"><button class="btn btn-info">
-                    <i class="icon-rss"></i>
-                    RSS
-                </button></a>
-                <table id="loglist" class="table table-striped table-bordered">
-                    <thead>
-                        <th>ID</th>
-                        <th>Type</th>
-                        <th>Test</th>
-                        <th>Message</th>
-                        <th class="sort desc">When</th>
-                        <th>Notified</th>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="pagination pagination-right"></div>
             </div>
         </div>
 
-        <div class="modal hide" id="test-detail">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">x</button>
-                <h3 class="test-title">Test</h3>
-            </div>
-            <div class="modal-body">
-                <div id="test-detail-alert" class="hide alert alert-error">
-                    <button class="close" data-dismiss="alert">x</button>
-                    <h4 class="alert-heading">Attention!</h4>
-                    <span class="alert-body">Woah, buddy!</span>
-                </div>
-                <form id="test-detail-form" class="form-horizontal">
-                    <fieldset class="form-head">
-                        <div>
-                            <label for="test-name">Name</label>
-                            <input type="text" id="test-name" />
-                        </div>
-                        <div>
-                            <label for="test-schedule">Schedule</label>
-                            <select id="test-schedule"></select>
-                        </div>
-                        <div>
-                            <label for="test-database">Database</label>
-                            <select id="test-database"></select>
-                        </div>
-                        <div>
-                            <label for="test-type">Type</label>
-                            <select id="test-type"></select>
-                        </div>
-                        <div>
-                            <label for="test-owner">Owner</label>
-                            <select id="test-owner"></select>
-                        </div>
-                        <div>
-                            <label for="test-cc">CC</label>
-                            <input type="text" id="test-cc" />
-                            <span class="help-block">Comma-separated E-mail addresses to notify of test results.</span>
-                        </div>
-                        <div>
-                            <label for="test-no-results">Fail on no query results</label>
-                            <input type="checkbox" id="test-no-results" />
-                        </div>
-                    </fieldset>
-
-                    <label for="test-sql">SQL</label>
-                    <textarea id="test-sql" class="input-block-level code sql"></textarea>
-
-                    <label for="test-python">Python</label>
-                    <textarea id="test-python" class="input-block-level code python"></textarea>
-                    <div class="help-block">
-                        <h4>Useful Variables</h4>
-                        <ul>
-                            <li><code>data</code> - Data returned by the query</li>
-                            <li><code>result</code> - Status of the test.  True(pass)/False(fail).</li>
-                            <li><code>resultData</code> - Tabular data stored as a list of tuples in for storage and inclusion in the notification.</li>
-                        </ul>
+        <div class="modal fade" role="dialog" id="test-detail">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h3 class="test-title">Test</h3>
                     </div>
+                    <div class="modal-body">
+                        <div id="test-detail-alert" class="hide alert alert-danger">
+                            <button class="close" data-dismiss="alert">x</button>
+                            <h4 class="alert-heading">Attention!</h4>
+                            <span class="alert-body">Woah, buddy!</span>
+                        </div>
+                        <form id="test-detail-form" class="form-horizontal">
+                            <fieldset class="form-head">
+                                <div class="form-group">
+                                    <label for="test-name" class="col-sm-2 control-label">Name</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="test-name" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="test-schedule" class="col-sm-2 control-label">Schedule</label>
+                                    <div class="col-sm-10">
+                                        <select id="test-schedule" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="test-database" class="col-sm-2 control-label">Database</label>
+                                    <div class="col-sm-10">
+                                        <select id="test-database" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="test-type" class="col-sm-2 control-label">Type</label>
+                                    <div class="col-sm-10">
+                                        <select id="test-type" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="test-owner" class="col-sm-2 control-label">Owner</label>
+                                    <div class="col-sm-10">
+                                        <select id="test-owner" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="test-cc" class="col-sm-2 control-label">CC</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="test-cc" class="form-control" />
+                                        <span class="help-block">Comma-separated E-mail addresses to notify of test results.</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <input type="checkbox" id="test-no-results" /> <label for="test-no-results" class="control-label">Fail on no query results</label>
+                                    </div>
+                                </div>
+                            </fieldset>
 
-                    <input type="hidden" id="test-id" />
-                </form>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary" onclick="site.saveTest($('#test-detail-form')); return false;">Save changes</a>
+                            <fieldset class="form-group">
+                                <label for="test-sql">SQL</label>
+                                <textarea id="test-sql" class="form-control code sql"></textarea>
+                            </fieldset>
+
+                            <fieldset class="form-group code-block python">
+                                <label for="test-python">Python</label>
+                                <textarea id="test-python" class="form-control code python"></textarea>
+                                <div class="help-block">
+                                    <h4>Useful Variables</h4>
+                                    <ul>
+                                        <li><code>data</code> - Data returned by the query</li>
+                                        <li><code>result</code> - Status of the test.  True(pass)/False(fail).</li>
+                                        <li><code>resultData</code> - Tabular data stored as a list of tuples in for storage and inclusion in the notification.</li>
+                                    </ul>
+                                </div>
+                            </fieldset>
+
+                            <input type="hidden" id="test-id" />
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Close</a>
+                        <a href="#" class="btn btn-primary" onclick="site.saveTest($('#test-detail-form')); return false;">Save changes</a>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="modal hide" id="user-detail">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">x</button>
-                <h3 class="test-title">User</h3>
-            </div>
-            <div class="modal-body">
-                <div id="user-detail-alert" class="hide alert alert-error">
-                    <button class="close" data-dismiss="alert">x</button>
-                    <h4 class="alert-heading">Attention!</h4>
-                    <span class="alert-body">Woah, buddy!</span>
-                </div>
-                <form id="user-detail-form" class="form-horizontal">
-                    <div>
-                        <label for="test-name">Username</label>
-                        <input type="text" id="user-username" name="user-username" />
-                        <input type="hidden" id="user-origUsername" name="user-origUsername" />
+        <div class="modal fade" role="dialog" id="user-detail">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h3 class="test-title">User</h3>
                     </div>
-                    <div>
-                        <label for="test-schedule">E-mail</label>
-                        <input type="email" id="user-email" name="user-email" />
-                    </div>
-                    <div>
-                        <label for="test-database">Password</label>
-                        <input type="password" id="user-password" name="user-password" />
-                    </div>
-                    <div>
-                        <label for="test-type">Confirm</label>
-                        <input type="password" id="user-password2" name="user-password2" />
-                    </div>
+                    <div class="modal-body">
+                        <div id="user-detail-alert" class="hide alert alert-danger">
+                            <button class="close" data-dismiss="alert">x</button>
+                            <h4 class="alert-heading">Attention!</h4>
+                            <span class="alert-body">Woah, buddy!</span>
+                        </div>
+                        <form id="user-detail-form" class="form-horizontal">
+                            <div class="form-group">
+                                <label for="test-name" class="col-sm-2 control-label">Username</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="user-username" name="user-username" class="form-control" />
+                                    <input type="hidden" id="user-origUsername" name="user-origUsername" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-schedule" class="col-sm-2 control-label">E-mail</label>
+                                <div class="col-sm-10">
+                                    <input type="email" id="user-email" name="user-email" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-database" class="col-sm-2 control-label">Password</label>
+                                <div class="col-sm-10">
+                                    <input type="password" id="user-password" name="user-password" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-type" class="col-sm-2 control-label">Confirm</label>
+                                <div class="col-sm-10">
+                                    <input type="password" id="user-password2" name="user-password2" class="form-control" />
+                                </div>
+                            </div>
 
-                    <input type="hidden" id="user-id" />
-                </form>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary" onclick="$('#user-detail-form').submit();">Save changes</a>
+                            <input type="hidden" id="user-id" />
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Close</a>
+                        <a href="#" class="btn btn-primary" onclick="$('#user-detail-form').submit();">Save changes</a>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="modal hide" id="database-detail">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">x</button>
-                <h3 class="test-title">Database</h3>
-            </div>
-            <div class="modal-body">
-                <div id="database-detail-alert" class="hide alert alert-error">
-                    <button class="close" data-dismiss="alert">x</button>
-                    <h4 class="alert-heading">Attention!</h4>
-                    <span class="alert-body">Woah, buddy!</span>
-                </div>
-                <form id="database-detail-form" class="form-horizontal">
-                    <div>
-                        <label for="test-name">Name</label>
-                        <input type="text" id="database-name" />
+        <div class="modal fade" role="dialog" id="database-detail">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">x</button>
+                        <h3 class="test-title">Database</h3>
                     </div>
-                    <div>
-                        <label for="test-name">Username</label>
-                        <input type="text" id="database-username" />
-                    </div>
-                    <div>
-                        <label for="test-database">Password</label>
-                        <input type="password" id="database-password" />
-                    </div>
-                    <div>
-                        <label for="test-type">Confirm</label>
-                        <input type="password" id="database-password2" />
-                    </div>
-                    <div>
-                        <label for="test-schedule">Hostname</label>
-                        <input type="text" id="database-hostname" />
-                    </div>
-                    <div>
-                        <label for="test-schedule">Port</label>
-                        <input type="number" step="1" min="1024" max="65535" id="database-port" />
-                    </div>
+                    <div class="modal-body">
+                        <div id="database-detail-alert" class="hide alert alert-danger">
+                            <button class="close" data-dismiss="alert">x</button>
+                            <h4 class="alert-heading">Attention!</h4>
+                            <span class="alert-body">Woah, buddy!</span>
+                        </div>
+                        <form id="database-detail-form" class="form-horizontal">
+                            <div class="form-group">
+                                <label for="test-name" class="col-sm-2 control-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="database-name" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-name" class="col-sm-2 control-label">Username</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="database-username" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-database" class="col-sm-2 control-label">Password</label>
+                                <div class="col-sm-10">
+                                    <input type="password" id="database-password" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-type" class="col-sm-2 control-label">Confirm</label>
+                                <div class="col-sm-10">
+                                    <input type="password" id="database-password2" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-schedule" class="col-sm-2 control-label">Hostname</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="database-hostname" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="test-schedule" class="col-sm-2 control-label">Port</label>
+                                <div class="col-sm-10">
+                                    <input type="number" step="1" min="1024" max="65535" id="database-port" class="form-control" />
+                                </div>
+                            </div>
 
-                    <input type="hidden" id="database-id" />
-                </form>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary" onclick="$('#database-detail-form').submit()">Save changes</a>
+                            <input type="hidden" id="database-id" />
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Close</a>
+                        <a href="#" class="btn btn-primary" onclick="$('#database-detail-form').submit()">Save changes</a>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="copy"><div>Version {{ version }} :: Copyright &copy; 2012 Mike Shultz</div></div>
 
-        <script src="/static/js/jquery-1.7.2.min.js"></script>
+        <script src="/static/js/jquery-2.2.3.min.js"></script>
         <script src="/static/js/jquery.textarea.js"></script>
-        <script src="/static/js/jquery.validate.js"></script>
+        <script src="/static/js/jquery.validate.min.js"></script>
         <script src="/static/b/js/bootstrap.min.js"></script>
-        <script src="/static/b/js/bootstrap-alert.js"></script>
-        <script src="/static/b/js/bootstrap-button.js"></script>
-        <script src="/static/b/js/bootstrap-modal.js"></script>
-        <!--<script src="/static/b/js/bootstrap-transition.js"></script>
-        <script src="/static/b/js/bootstrap-dropdown.js"></script>
-        <script src="/static/b/js/bootstrap-scrollspy.js"></script>
-        <script src="/static/b/js/bootstrap-tab.js"></script>
-        <script src="/static/b/js/bootstrap-tooltip.js"></script>
-        <script src="/static/b/js/bootstrap-popover.js"></script>
-        <script src="/static/b/js/bootstrap-collapse.js"></script>
-        <script src="/static/b/js/bootstrap-carousel.js"></script>
-        <script src="/static/b/js/bootstrap-typeahead.js"></script>//-->
         <script src="/static/js/jquery.tablesorter.js"></script>
         <script src="/static/js/codemirror.js"></script>
         <script src="/static/js/codemirror/python.js"></script>
