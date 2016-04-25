@@ -23,16 +23,9 @@ body {
         width: 350px;
     }
 
-form label {
-    margin-top: 5px;
+.container {
+    padding-top: 15px;
 }
-    form .form-head { }
-        form .form-head div {
-            display: block;
-            float: left;
-            margin-right: 10px;
-            width: 250px;
-        }
 
 #tests .btn-group,
 #users .btn-group,
@@ -51,6 +44,18 @@ form label {
 #login-form {}
 #login-form fieldset {
     margin-bottom: 10px;
+}
+
+#test-detail-form {}
+    #test-detail-form > .form-group {
+        margin-left: 10px;
+    }
+
+@media (min-width: 768px) {
+    .modal-dialog {
+        width: 90%;
+        max-width: 950px;
+    }
 }
 
 tr.error td {

@@ -291,10 +291,12 @@ Pq.prototype = {
                 $('#test-name').val(data['name']);
                 $('#test-owner').val(data['user_id']);
                 $('#test-lastrun').val(data['lastrun']);
-                $('#test-sql').val(data['sql']);
-                Pq.currentTestSqlElement = CodeMirror.fromTextArea($('#test-sql')[0], {lineNumbers: true, mode: 'text/x-pgsql' });
-                $('#test-python').val(data['python']);
-                Pq.currentTestPythonElement = CodeMirror.fromTextArea($('#test-python')[0], {lineNumbers: true, mode: 'python' });
+                $('#test-sql').val(data['sql']).ready(function() {
+                    Pq.currentTestSqlElement = CodeMirror.fromTextArea(document.getElementById('test-sql'), {lineNumbers: true, mode: 'text/x-pgsql' });
+                });
+                $('#test-python').val(data['python']).ready(function() {
+                    Pq.currentTestPythonElement = CodeMirror.fromTextArea(document.getElementById('test-python'), {lineNumbers: true, mode: 'python' });
+                });;
                 $('#test-database').val(data['database_id']);
                 $('#test-schedule').val(data['schedule_id']);
                 $('#test-type').val(data['test_type_id']);
@@ -307,16 +309,24 @@ Pq.prototype = {
             });
         } else {
             $('#test-detail-form input, #test-detail-form textarea, #test-detail-form select').val('');
+            Pq.currentTestSqlElement = CodeMirror.fromTextArea(document.getElementById('test-sql'), {lineNumbers: true, mode: 'text/x-pgsql' });
+            Pq.currentTestPythonElement = CodeMirror.fromTextArea(document.getElementById('test-python'), {lineNumbers: true, mode: 'python' });
         }
         
         $('#test-detail').modal({
             backdrop: true,
             keyboard: true
-        }).on('hidden', function() {
+        }).on('hidden.bs.modal', function() {
             // need a better namespace or something
-            console.debug
-            Pq.currentTestPythonElement.toTextArea();
+            console.debug("destroying CM editors");
             Pq.currentTestSqlElement.toTextArea();
+            Pq.currentTestPythonElement.toTextArea();
+        }).on('shown.bs.modal', function(e) {
+            console.debug("refreshing CM editors");
+            Pq.currentTestSqlElement.refresh();
+            Pq.currentTestPythonElement.refresh();
+            //Pq.currentTestSqlElement = CodeMirror.fromTextArea(document.getElementById('test-sql'), {lineNumbers: true, mode: 'text/x-pgsql' });
+            //Pq.currentTestPythonElement = CodeMirror.fromTextArea(document.getElementById('test-python'), {lineNumbers: true, mode: 'python' });
         });
         /*.css({
            'width': function () { 
@@ -669,6 +679,16 @@ $(document).ready(function() {
         });
         $(this).button('reset');
     });
+
+    // Hide python code if it's unnecessary
+    $('#test-detail-form #test-type').change(function() {
+        if ($('#test-detail-form #test-type').val() == 2) {
+            $('#test-detail-form .code-block.python').show();
+        } else {
+            $('#test-detail-form .code-block.python').hide();
+        }
+    });
+
     $('#test-detail-form').submit(function() {
         site.saveTest($('#test-detail-form'));
         return false;
