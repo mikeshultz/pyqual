@@ -1,3 +1,45 @@
+2.0.0
+================================================================================
+e02bfa9 README is up to date.  Issue #46
+8e6ee86 Other build files that don't need to be seen.
+c910c16 Daemon wasn't working quite right, so had to adjust a lot.  Ended up just modifying daemon.runner into pyqual.runner so it would work.
+8f38d6e Merge branch 'feature/50' into develop
+5c01910 Minor brand alteration
+a699a99 A bunch of style changes to bring everything inline with Boostrap 3.  Issue #50
+dc96653 Some old unnecessary stuff.  Issue #50
+9e2b33b Bunch of upgrades including jquery, bootstrap, and some supporting plugins and modules.  Issue #50
+621b53c Impvoed help text for python test input.  Issue #48
+6987168 Docstrings and author information for everything!  Issue #49
+711168f Better handling for pickling and binary data with psycopg2.
+c48c524 Should refer to Pq and not this
+cdfe19d Fixed a potential test data bug
+266a23f Merge tag 'v57' into develop
+1e840b6 (tag: v57, origin/master, origin/HEAD, master) Merge branch 'hotfix/57'
+f0cf7db Fixed defaults for command line options.  Issue #47
+f9900e6 Added a warning to settings.py to make sure people use INI files.
+a6425ca Added codehighlighting using CodeMirror.  Issue #39
+935bd4f Merge tag 'v40' into develop
+f247f20 (tag: v40) Merge branch 'hotfix/40'
+b9fc4f9 Changed how it initially loads data a bit.  From now on, it will only load tests and some semi-static data by default.  And every time a tab is clicked it should refresh the page conents.  Issue #40
+9cdca5d Bunch of updates to bring it in line with the new system.  Issue #46
+3d63e2c Moved config over to ini files.  Issue #44
+3fc20f6 Fixed a small bug with password salts
+5b47ee5 Merge branch 'feature/45' into develop
+0899409 Changed version requirement for setup.py and added some TODO.  Issue #45
+3f3cb78 Fixed a bad format requirement.
+1894c0c Some better pickling
+2b84905 Change for python3 and exec().  Issue #45
+0fb0825 Got a working pqdaemon for python3, but still not happy with it. Issue #45
+b85c7bd Some version updates as well as a change to daemonize to the python3 conversion.  Issue #45
+894e195 Fixed a string encoding problem for the python3 conversion.  Issue #45
+2723a0e Some python3 fixes along side some better E-mail error handling.  Issue #45
+6d0896d Better E-mail handling including some python3 shit.  Issue #45
+b4b595d Fixed some more python 2 to 3 conversion syntax errors, as well as adjusted imports of some email modules for new layout.  Issue #45
+7372b58 Fixed some syntax errors for python3 conversion.  Issue #45
+d6df514 Fixed some syntax errors for conversion, as well as a couple of imports.  Issue #45
+5ff902c Merge branch 'hotfix/42' into develop
+651d8ab Fixed a syntax error as well as handled CC addresses better.  Issue #42
+
 1.0.5
 ================================================================================
 4eb269c Updated README for new usage with pqdaemon.
