@@ -40,7 +40,7 @@ Setup
 
 1) Run ``sudo python setup.py install``
 2) *Optionally* get the base data into your database with ``python setup.py basedata --name=[dbname] --user=[username]``
-3) Create ``/etc/pyqual/pyqual.ini`` or ``~/.config/pyqual.ini`` with the configuration files outlined in Configuration_
+3) Create ``/etc/pyqual/pyqual.ini`` or ``~/.config/pyqual.ini`` with the configuration outlined in Configuration_
 4) Run the Pyqual daemon with ``pqdaemon.py start``
 5) Try the web interface, which is default at http://localhost:8081/ and the first user added to the DB has a username of 'admin' and a password of 'pyqual'.
 
@@ -132,16 +132,18 @@ store it in ``resultData`` in your Python test.::
 
     SELECT user_id, username FROM pq_user JOIN pq_user_permission perm USING (user_id) WHERE permission_id = 3;
 
+``resultData`` should be a **list of tuples** to be formatted as a spreadsheet.
+
 ::
 
     if len(data) > 0:
         result = True
         resultData['users'] = []
         for row in data:
-            resultData['users'].append(row['username'])
+            resultData['users'].append( (row['user_id'], row['username']) )
 
 Then the list will be stored in the log as the actual list of strings and be
-E-mailed as a pretty printed string.
+E-mailed as an attached spreadsheet.
 
 Problems or Questions
 ================================================================================
