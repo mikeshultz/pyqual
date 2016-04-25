@@ -473,7 +473,7 @@ def main():
             if user_id:
                 if password:
                     pasSQL = 'password = %s,'
-                    vals = (username, auth.hash(password), email, user_id)
+                    vals = (username, auth.hash(password.encode('UTF-8')), email, user_id)
                 else:
                     pasSQL = ''
                     vals = (username, email, user_id)
@@ -490,7 +490,7 @@ def main():
             else:
                 cur.execute(
                     """INSERT INTO pq_user (username, password, email) VALUES (%s,%s,%s);""",
-                    (username, auth.hash(password), email)
+                    (username, auth.hash(password.encode('UTF-8')), email)
                 )
                 action = Inserted()
 
