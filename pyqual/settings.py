@@ -23,10 +23,11 @@ __email__ = "mike@mikeshultz.com"
 __status__ = "Production"
 
 VERSION = __version__
+APP_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 config = configparser.ConfigParser()
 config.read([
-    'config/pyqual.ini',
+    APP_ROOT + '/../config/pyqual.ini',
     '/etc/pyqual/pyqual.ini',
     os.path.expanduser('~/.config/pyqual.ini')
 ])
@@ -56,12 +57,6 @@ EMAIL_SENDING_HOST = config['email']['smtp_host']
 # Be careful what you allow here, enabling modules like sys or os will 
 # give test writers access to the whole operating system
 IMPORT_WHITELIST = config['tests']['import_whitelist'].split(',')
-
-
-### !!!
-# Do not alter the below settings unless you know what you're doing!
-### !!!
-APP_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 # Config for CherryPy
 if not nocherry:
