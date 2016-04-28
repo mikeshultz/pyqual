@@ -204,28 +204,33 @@ def main():
 
             if l.get('result_data'):
                 if args.debug:
-                    print('Debug: Found data')
-                    print(type(l.get('result_data')))
+                    print('Debug: Found data for #%s' % l['test_id'])
+                    #print(type(l.get('result_data')))
 
                 try:
                     raw_data = l.get('result_data') #, '').encode('UTF-8', 'ignore')
-                    print(raw_data)
+                    if args.debug:
+                        print(raw_data)
                     #data = pickle.loads(raw_data)
                     data = pickle.loads(psycopg2.BINARY(raw_data, cur))
                 except (UnpicklingError, TypeError):
                     raw_data = l.get('result_data')
-                    print(raw_data)
+                    if args.debug:
+                        print(raw_data)
                     data = pickle.loads(raw_data)
+                
+                if args.debug:
+                    print('Data: %s' % data)
 
                 if data:
                     try:
-                        for key, val in data.iteritems():
+                        for key, val in data.items():
                             if is_list_of_tuples(val):
                                 strData = '\n'.join([','.join(map(str, x)) for x in val])
                                 if strData:
                                     tf = tempfile.NamedTemporaryFile()
                                     tf.seek(0)
-                                    tf.write(strData)
+                                    tf.write(strData.encode('UTF-8'))
                                     tf.flush()
                                     os.fsync(tf)
                                     msg.csvFiles.append((key, tf))
@@ -235,7 +240,12 @@ def main():
                                     if args.debug:
                                         print('Debug: storing data')
                                     resultData.append( (l['test_id'], strData) )
-                    except: 
+                    except AttributeError as e:
+                        if 'iteritems' in str(e):
+                            print('Error: resultData for text #%s is not in the correct format.' % l['test_id'])
+                        else:
+                            raise e
+                    except Exception as e:
                         if args.debug:
                             print("Debug: Failure iterating data for test_id = %s" % l['test_id'])
 
